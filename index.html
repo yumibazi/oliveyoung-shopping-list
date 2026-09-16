@@ -220,6 +220,19 @@ button:disabled{opacity:.5;cursor:default}
 @media(max-width:650px){.list-panel{padding:14px;border-radius:30px}.list-panel>.section-heading{gap:10px;padding:2px 0 14px;margin-bottom:14px}.list-panel .section-heading h2{font-size:20px}.list-panel .section-actions{gap:6px}.list-panel .add-item,.list-panel .manage-toolbar button,.delete-entry{font-size:12px;padding:9px 11px}.list-panel .body{padding:18px}.list-panel .product-actions{gap:6px}.list-panel .product-actions .btn{flex-basis:130px;font-size:12px}.list-panel .product-actions button{font-size:12px;padding:10px}}
 @media(max-width:370px){.list-panel>.section-heading{flex-direction:column;align-items:flex-start}.list-panel .section-actions{margin-left:0}}
 @media print{.list-panel{padding:0;border:0;box-shadow:none}.delete-entry{display:none}}
+/* Keep scrollbars inside the rounded dialog shell. */
+#add-dialog{padding:8px;overflow:hidden;max-height:calc(100dvh - 32px);width:min(540px,calc(100% - 28px))}
+#add-form{display:flex;flex-direction:column;max-height:calc(100dvh - 50px);min-height:0;margin:0}
+.dialog-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 12px;flex:none}
+#add-title{margin:0;font-size:23px}.dialog-close{border:1px solid #fff;background:#ffffff96;border-radius:50%;color:#5b657c;width:36px;height:36px;font-size:23px;cursor:pointer;flex:none}
+#add-scroll{min-height:0;overflow:auto;padding:0 16px 16px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#9aa5c080 transparent;border-radius:18px;scroll-padding:10px}
+#add-scroll::-webkit-scrollbar{width:6px}#add-scroll::-webkit-scrollbar-track{background:transparent;margin-block:12px}#add-scroll::-webkit-scrollbar-thumb{background:#9aa5c080;border-radius:99px}
+#add-form .form-actions{flex:none;padding:12px 16px 10px;border-top:1px solid #ffffffc9;align-items:center}
+#add-form .form-actions button{flex:1}#add-form #form-error{font-size:12px;margin:0;padding:0 16px;color:#a02540}#form-error:empty{display:none}
+body:has(#add-dialog[open]){overflow:hidden}
+.import-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0}.import-actions a{font-size:13px;color:#405bc2}#link-kind{font-size:12px;color:#626e8b}#read-status{margin:8px 0;overflow-wrap:anywhere}#read-status:empty,#link-kind:empty{display:none}
+#add-form textarea[name=url]{font-size:13px;resize:vertical;max-height:140px}#assist-import{margin:14px 0}#file-import{margin:8px 0}#read-variants{margin:10px 0}
+@media(max-width:400px){.dialog-header{padding:12px}#add-scroll{padding:0 12px 12px}#add-title{font-size:21px}}
 </style>
 </head>
 <body>
@@ -562,18 +575,20 @@ button:disabled{opacity:.5;cursor:default}
 </footer>
 <div class="editor-status" role="status" aria-live="polite" aria-atomic="true"></div>
 <dialog id="add-dialog" aria-labelledby="add-title"><form id="add-form">
-<h2 id="add-title">添加商品</h2>
+<div class="dialog-header"><h2 id="add-title">添加商品</h2><button class="dialog-close" type="button" id="close-add" aria-label="关闭添加商品">×</button></div>
+<div id="add-scroll">
 <label>商品名称（必填）<input name="name" required maxlength="120" autocomplete="off" placeholder="例如：保湿防晒霜"></label>
-<label>商品链接（选填）<input name="url" type="url" placeholder="https://…，用于打开商品页"></label>
-<details id="assist-import"><summary>辅助填入：已有清单链接／网页文件</summary><p>已有清单链接可带出旧资料；新网站仅尝试读取，可能失败。Olive Young 新链接目前需手填或导入网页。</p><button type="button" id="read-product">尝试填入资料</button><p id="read-status" role="status" aria-live="polite"></p>
-<details id="file-import"><summary>导入保存的商品网页</summary><p>选择实际商品详情页的 HTML 文件，仅在本机解析。请核对读取的价格和规格。</p><label>网页文件<input type="file" id="product-html" accept=".html,.htm,text/html"></label></details><select id="read-variants" aria-label="选择规格或色号" hidden></select></details>
+<label>商品链接／分享文字（选填）<textarea name="url" rows="2" maxlength="6000" placeholder="粘贴淘宝、京东、Olive Young 链接或完整分享文字"></textarea></label>
+<div id="link-kind" aria-live="polite"></div><div class="import-actions"><button type="button" id="read-product">识别并填入</button><a id="open-import-link" target="_blank" rel="noopener noreferrer" hidden>打开商品页 ↗</a></div><p id="read-status" role="status" aria-live="polite"></p>
+<details id="assist-import"><summary>从保存的商品网页导入</summary><p>链接可识别平台；分享文字可提取明确的名称、价格和规格。淘宝、京东等页面无法直接读取时，可导入保存的 HTML。</p>
+<details id="file-import" open><summary>选择商品网页文件</summary><p>在浏览器打开商品详情页，保存为“网页，仅 HTML”，然后选择文件。按保存时的信息读取，导入后请核对。</p><label>网页文件<input type="file" id="product-html" accept=".html,.htm,text/html"></label></details></details><select id="read-variants" aria-label="选择规格或色号" hidden></select>
 <label>规格／色号（选填）<input name="spec" maxlength="150" placeholder="例如：50 毫升／02 自然色"></label>
 <label>价格（选填）<input name="price" maxlength="80" placeholder="注明币种，例如 ₩15,000 或 ¥75"></label>
 <label>备注（选填）<textarea name="note" maxlength="500" rows="2" placeholder="用途、想买的数量、到店注意事项"></textarea></label>
 <label>上传商品图片（选填）<input name="imageFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
 <label>或填写图片网址（选填）<input name="imageUrl" type="url" placeholder="https://…"></label>
 <small>上传图片优先于图片网址。新增商品保存在当前浏览器，不会同步到其他设备。</small>
-<p id="form-error" role="alert"></p><div class="form-actions"><button type="button" id="cancel-add">取消</button><button type="submit">添加到清单</button></div>
+</div><p id="form-error" role="alert"></p><div class="form-actions"><button type="button" id="cancel-add">取消</button><button type="submit">添加到清单</button></div>
 </form></dialog>
 <script>
 (() => {
@@ -592,39 +607,77 @@ const dialog = document.querySelector('#add-dialog'), form = document.querySelec
 const readButton=document.querySelector('#read-product'), readStatus=document.querySelector('#read-status'), variants=document.querySelector('#read-variants');
 let importController=null, importVersion=0, importedOptions=[];
 function resetImport(){importVersion++;if(importController)importController.abort();readButton.disabled=false;readStatus.textContent='';variants.hidden=true;variants.replaceChildren();importedOptions=[];}
-function canonicalLink(value){try{const u=new URL(value);if(u.hostname==='www.oliveyoung.co.kr'&&u.searchParams.has('goodsNo'))return u.origin+u.pathname+'?goodsNo='+encodeURIComponent(u.searchParams.get('goodsNo'));u.hash='';return u.href;}catch(_){return value;}}
+function platformFor(url){
+ const host=new URL(url).hostname.toLowerCase();const is=domain=>host===domain||host.endsWith('.'+domain);
+ if(is('taobao.com')||is('tmall.com')||is('tb.cn'))return '淘宝／天猫';
+ if(is('jd.com')||is('jd.hk')||is('3.cn'))return '京东';
+ if(is('oliveyoung.co.kr')||is('oliveyoung.com'))return 'Olive Young';
+ return '其他网站';
+}
+function canonicalLink(value){try{
+ const u=new URL(value);u.hash='';
+ if((u.hostname==='www.oliveyoung.co.kr'||u.hostname==='m.oliveyoung.co.kr')&&u.searchParams.has('goodsNo'))return 'https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo='+encodeURIComponent(u.searchParams.get('goodsNo'));
+ if(/^(item\.taobao\.com|detail\.tmall\.com)$/.test(u.hostname)&&u.searchParams.has('id')){const keep=new URLSearchParams();for(const key of ['id','skuId'])if(u.searchParams.has(key))keep.set(key,u.searchParams.get(key));u.search=keep.toString();}
+ if(u.hostname==='item.jd.com'&&/^\/\d+\.html$/.test(u.pathname))u.search='';
+ return u.href;
+ }catch(_){return value;}}
+function parseShare(text){
+ const urls=(text.match(/https?:\/\/[^\s<>「」【】“”\"\u0027]+/gi)||[]).map(v=>v.replace(/[，。；！!、）)\]}]+$/g,''));
+ const valid=urls.filter(v=>{try{return !!webURL(v);}catch(_){return false;}});
+ const raw=valid.find(v=>platformFor(v)!=='其他网站')||valid[0]||'';const url=raw?canonicalLink(raw):'';
+ const title=text.match(/(?:商品名称|商品名|名称)\s*[:：]\s*([^\n\r]+)/)?.[1]||text.match(/[「“]([^」”]{2,120})[」”]/)?.[1]||'';
+ const price=text.match(/(?:到手价|券后价|价格|售价)\s*[:：]?\s*((?:[¥￥₩$]|CNY|KRW|USD)\s*\d[\d,]*(?:\.\d{1,2})?|\d[\d,]*(?:\.\d{1,2})?\s*元)/i)?.[1]||'';
+ const spec=text.match(/(?:规格|色号|型号)\s*[:：]\s*([^\n\r]+)/)?.[1]||'';
+ return {url,platform:url?platformFor(url):'',name:title.replace(/https?:\/\/.*$/,'').trim().slice(0,120),price,spec:spec.trim().slice(0,150)};
+}
+const importLink=document.querySelector('#open-import-link'),linkKind=document.querySelector('#link-kind');
+function updateLinkPreview(){const info=parseShare(form.elements.url.value);linkKind.textContent=info.url?'已识别：'+info.platform:'';importLink.hidden=!info.url;if(info.url)importLink.href=info.url;else importLink.removeAttribute('href');}
 function setField(name,value){form.elements[name].value=value||'';}
-function applyOption(option){setField('spec',option.spec);setField('price',option.price);setField('imageUrl',option.image);}
-variants.addEventListener('change',()=>{const option=importedOptions[Number(variants.value)];if(option)applyOption(option);});
-form.elements.url.addEventListener('input',resetImport);
+function applyOption(option,explicit=false){for(const [field,value] of [['spec',option.spec],['price',option.price],['imageUrl',option.image]])if(explicit||!form.elements[field].value.trim())setField(field,value);}
+variants.addEventListener('change',()=>{if(variants.value==='')return;const option=importedOptions[Number(variants.value)];if(option)applyOption(option,true);});
+form.elements.url.addEventListener('input',()=>{resetImport();updateLinkPreview();});
 dialog.addEventListener('close',resetImport);
-function safeImage(value,base){try{return webURL(new URL(value,base).href);}catch(_){return '';}}
-function showOptions(options){importedOptions=options;variants.replaceChildren();options.forEach((v,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=v.spec||'默认规格';variants.append(o);});variants.hidden=options.length<2;if(options.length)applyOption(options[0]);}
+function safeImage(value,base){if(typeof value!=='string'||!value.trim())return '';try{return webURL(new URL(value,base).href);}catch(_){return '';}}
+function showOptions(options){importedOptions=options;variants.replaceChildren();if(options.length>1){const placeholder=new Option('请选择规格／色号','');placeholder.disabled=true;placeholder.selected=true;variants.append(placeholder);}options.forEach((v,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=v.spec||'默认规格';variants.append(o);});variants.hidden=options.length<2;if(options.length===1)applyOption(options[0]);}
 async function fetchProduct(url,signal){const response=await fetch(url,{signal,credentials:'omit',referrerPolicy:'no-referrer'});if(!response.ok)throw Error('网站返回 '+response.status);return response;}
 function extractHTML(html,url){
  const doc=new DOMParser().parseFromString(html,'text/html');let product;
- const heading=doc.querySelector('.prd_name, [itemprop="name"]')?.textContent?.trim()||'';
- if(/access denied|just a moment|사용자 확인|로그인/i.test(doc.title)&&!heading&&!doc.querySelector('script[type="application/ld+json"]'))throw Error('这是登录页或访问验证页，请保存实际商品详情页。');
- function visit(obj){if(!obj||typeof obj!=='object'||product)return;if(Array.isArray(obj)){obj.forEach(visit);return;}const types=[obj['@type']].flat();if(types.includes('Product')){product=obj;return;}if(obj['@graph'])visit(obj['@graph']);}
+ const read=selector=>{const node=doc.querySelector(selector);return (node?.getAttribute('content')||node?.textContent||'').trim();};
+ const heading=read('.prd_name, .sku-name, .tb-main-title, .tb-detail-hd h1, [itemprop="name"]');
+ if(/access denied|just a moment|사용자 확인|로그인|安全验证|登录|验证码|访问受限/i.test(doc.title))throw Error('这是登录或验证页面，请保存能看到商品信息的详情页。');
+ function visit(obj){if(!obj||typeof obj!=='object'||product)return;if(Array.isArray(obj)){obj.forEach(visit);return;}const types=[obj['@type']].flat();if(types.includes('Product')||types.includes('ProductGroup')){product=obj;return;}if(obj['@graph'])visit(obj['@graph']);}
  doc.querySelectorAll('script[type="application/ld+json"]').forEach(s=>{try{visit(JSON.parse(s.textContent));}catch(_){}});
  const meta=key=>doc.querySelector('meta[property="'+key+'"],meta[name="'+key+'"]')?.content||'';
- if(!product&&!meta('og:title')&&!heading)throw Error('页面未提供可识别的商品资料');
- const offer=product?.offers, single=Array.isArray(offer)?offer[0]:offer;
- const amount=single?.price??single?.lowPrice??meta('product:price:amount');const currency=single?.priceCurrency||meta('product:price:currency');
- const img=[product?.image].flat()[0];
- return {name:product?.name||heading||meta('og:title'),options:[{spec:product?.color||product?.size||'',price:amount!==''&&amount!=null?`${currency||'币种待核对'} ${amount}`:'',image:safeImage(typeof img==='string'?img:img?.url||meta('og:image'),url)}]};
+ const name=product?.name||heading||meta('og:title');
+ const metaAmount=meta('product:price:amount')||meta('og:price:amount')||read('[itemprop="price"], .p-price .price, #J_StrPrice .tb-rmb-num, .price-2 strong');
+ if(!name||(!product&&!heading&&!metaAmount&&meta('og:type')!=='product'))throw Error('未发现商品资料，请保存商品详情页，而不是商城首页或搜索页。');
+ const platform=platformFor(url),host=new URL(url).hostname;const defaultCurrency=platform==='淘宝／天猫'||host==='item.jd.com'?'CNY':(host==='oliveyoung.co.kr'||host.endsWith('.oliveyoung.co.kr'))?'KRW':'';
+ const hasVariants=Array.isArray(product?.hasVariant)&&product.hasVariant.length>0;
+ const makeOption=p=>{
+  const offer=Array.isArray(p.offers)?p.offers[0]:p.offers;const currency=offer?.priceCurrency||meta('product:price:currency')||meta('og:price:currency')||defaultCurrency;
+  const amount=offer?.price??offer?.lowPrice??(hasVariants?'':metaAmount);let price='';
+  if(amount!==''&&amount!=null){price=`${currency||'币种待核对'} ${amount}`;if(offer?.lowPrice!=null&&offer?.price==null)price+=offer.highPrice!=null&&String(offer.highPrice)!==String(offer.lowPrice)?'–'+offer.highPrice:' 起';}
+  const img=[p.image].flat()[0];
+  return {spec:[p.color,p.size].filter(v=>typeof v==='string').join(' / ')||(p!==product?p.name||p.sku||'':''),price,image:safeImage(typeof img==='string'?img:img?.url||(hasVariants?'':meta('og:image')),url)};
+ };
+ const variants=Array.isArray(product?.hasVariant)?product.hasVariant.filter(p=>p&&typeof p==='object'):[];
+ return {name,options:variants.length?variants.map(makeOption):[makeOption(product||{})]};
 }
 document.querySelector('#product-html').addEventListener('change',async e=>{
  const file=e.target.files[0];if(!file)return;resetImport();const version=importVersion;
  try{if(file.size>12*1024*1024)throw Error('网页文件超过 12 MB，请保存“仅 HTML”后重试。');
- const url=webURL(form.elements.url.value.trim());if(!url)throw Error('请先填写对应的商品链接，以便解析图片地址。');
+ const url=parseShare(form.elements.url.value).url;if(!url)throw Error('请先填写对应的商品链接，以便解析图片地址。');
  const result=extractHTML(await file.text(),url);if(version!==importVersion)return;
- setField('name',result.name);form.elements.imageFile.value='';showOptions(result.options);
+ if(!form.elements.name.value.trim())setField('name',result.name);showOptions(result.options);
  readStatus.textContent='已从保存的网页填入资料，请核对。此价格为网页保存时的资料；未提供的字段仍需补充。';
  }catch(error){if(version===importVersion)readStatus.textContent='未能导入：'+error.message;}finally{e.target.value='';}
 });
 readButton.addEventListener('click',async()=>{
- resetImport();let url;try{url=webURL(form.elements.url.value.trim());if(!url)throw Error();}catch(_){readStatus.textContent='请先填写完整的 http 或 https 商品链接。';return;}
+ resetImport();const shared=parseShare(form.elements.url.value);const url=shared.url;const filled=[];
+ for(const field of ['name','price','spec'])if(shared[field]&&!form.elements[field].value.trim()){setField(field,shared[field]);filled.push({name:'名称',price:'价格',spec:'规格'}[field]);}
+ updateLinkPreview();
+ const sharedMessage=filled.length?'已从分享文字填入'+filled.join('、')+'，请核对。':'';
+ if(!url){readStatus.textContent=sharedMessage||'请粘贴完整商品链接或含明确名称、价格的分享文字；淘口令本身无法解析。';return;}
  const version=importVersion;readButton.disabled=true;readStatus.textContent='正在读取商品…';importController=new AbortController();const controller=importController;const timeout=setTimeout(()=>controller.abort(),12000);
  try{
    let result, source='';
@@ -633,9 +686,9 @@ readButton.addEventListener('click',async()=>{
    if(matches.length){result={name:matches[0].querySelector('h2').textContent,options:matches.map(c=>({spec:c.querySelector('.sub').textContent,price:c.querySelector('.price').textContent,image:c.querySelector('img')?.src||''}))};source='已从现有清单填入，价格与规格未实时更新。';}
    else{
      const parsed=new URL(url);
-     if(parsed.hostname==='www.oliveyoung.co.kr'){
-       readStatus.textContent='此官网目前拒绝直接读取新商品。请在浏览器打开商品页并保存 HTML，通过下方入口导入，或手动填写。';
-       document.querySelector('#file-import').open=true;return;
+     if(shared.platform!=='其他网站'){
+       readStatus.textContent=sharedMessage+'已识别'+shared.platform+'链接。当前免费版无法直接抓取该平台；未读到的价格、图片和色号可从下方保存的商品网页导入，或手动填写。';
+       document.querySelector('#assist-import').open=true;document.querySelector('#file-import').open=true;return;
      }
      if(/\/products\/[^/]+\/?$/.test(parsed.pathname)){
        try{const endpoint=new URL(url);endpoint.pathname=endpoint.pathname.replace(/\/$/,'')+'.json';endpoint.search='';const raw=await(await fetchProduct(endpoint.href,controller.signal)).json();const product=raw.product;
@@ -646,7 +699,7 @@ readButton.addEventListener('click',async()=>{
      source='已读取网站提供的商品资料。请核对价格、币种和规格；空白字段需手动补充。';
    }
    if(version!==importVersion)return;
-   setField('name',result.name);form.elements.imageFile.value='';showOptions(result.options);readStatus.textContent=source;
+   if(!form.elements.name.value.trim())setField('name',result.name);showOptions(result.options);readStatus.textContent=sharedMessage+source;
  }catch(error){if(version===importVersion)readStatus.textContent=controller.signal.aborted?'读取超时。可以重试，或直接手动填写。':'无法自动读取：网站可能限制跨网站访问，或未提供商品资料。请手动填写，已填内容会保留。';}
  finally{clearTimeout(timeout);if(version===importVersion)readButton.disabled=false;}
 });
@@ -680,12 +733,15 @@ async function readImage(file){
  if(file.size>15*1024*1024)throw Error('图片过大，请选择 15 MB 以内的图片。');
  const source=URL.createObjectURL(file);try{const img=new Image();img.src=source;await img.decode();const ratio=Math.min(1,900/Math.max(img.width,img.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*ratio));canvas.height=Math.max(1,Math.round(img.height*ratio));const ctx=canvas.getContext('2d');ctx.fillStyle='#fff5ee';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.82);}finally{URL.revokeObjectURL(source);}
 }
-document.querySelectorAll('.add-item').forEach(button=>button.addEventListener('click',()=>{destination=document.getElementById(button.dataset.list);form.reset();resetImport();document.querySelectorAll("#add-form details").forEach(d=>d.open=false);document.querySelector('#form-error').textContent='';document.querySelector('#add-title').textContent='添加到'+destination.getAttribute('aria-label');dialog.showModal();form.elements.name.focus();}));
+document.querySelectorAll('.add-item').forEach(button=>button.addEventListener('click',()=>{destination=document.getElementById(button.dataset.list);form.reset();resetImport();updateLinkPreview();document.querySelector('#assist-import').open=false;document.querySelector('#file-import').open=true;document.querySelector('#form-error').textContent='';document.querySelector('#add-title').textContent='添加到'+destination.getAttribute('aria-label');dialog.showModal();form.elements.name.focus();document.querySelector('#add-scroll').scrollTop=0;}));
+document.querySelector('#close-add').addEventListener('click',()=>dialog.close());
 document.querySelector('#cancel-add').addEventListener('click',()=>dialog.close());
 form.addEventListener('submit',async e=>{
  e.preventDefault();const submit=form.querySelector('[type="submit"]');submit.disabled=true;document.querySelector('#form-error').textContent='';
  try{const name=form.elements.name.value.trim();if(!name)throw Error('请填写商品名称。');
- const data={id:'custom-'+crypto.randomUUID(),list:destination.id,name,spec:form.elements.spec.value.trim(),price:form.elements.price.value.trim(),note:form.elements.note.value.trim(),url:webURL(form.elements.url.value.trim()),image:await readImage(form.elements.imageFile.files[0])||webURL(form.elements.imageUrl.value.trim())};
+ const shareText=form.elements.url.value.trim(),shared=parseShare(shareText);
+ if(shareText&&!shared.url&&!shared.name&&!shared.price&&!shared.spec)throw Error('未识别到商品链接，请使用完整的 http／https 链接，或清空后直接添加。');
+ const data={id:'custom-'+crypto.randomUUID(),list:destination.id,name,spec:form.elements.spec.value.trim(),price:form.elements.price.value.trim(),note:form.elements.note.value.trim(),url:shared.url,image:await readImage(form.elements.imageFile.files[0])||webURL(form.elements.imageUrl.value.trim())};
  const card=makeCard(data);try{localStorage.setItem(customKey,JSON.stringify([...custom,data]));}catch(_){throw Error('浏览器存储空间不足或禁止保存，商品尚未添加。请缩小图片或改用图片网址。');}
  custom.push(data);cards.push(card);bindCard(card,data.id);destination.append(card);update();dialog.close();card.scrollIntoView({block:'nearest'});say('已添加并保存：'+name);
  }catch(error){document.querySelector('#form-error').textContent=error.message||'添加失败，请重试。';}finally{submit.disabled=false;}
