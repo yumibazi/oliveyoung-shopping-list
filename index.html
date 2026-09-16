@@ -210,6 +210,16 @@ button:disabled{opacity:.5;cursor:default}
 @media(prefers-reduced-transparency:reduce){header .inner,.card,#sticky-controls .editor-nav,#sort-help,#add-dialog{background:#f9f9fd;backdrop-filter:none;-webkit-backdrop-filter:none}}
 @media(prefers-reduced-motion:reduce){button,.btn{transition:none}}
 @media print{body{background:white}header .inner,.card{background:white;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}header{margin:0;padding:0}header .inner{padding:18px;border:0}.card{break-inside:avoid}.section-actions,#sticky-controls,#sort-help{display:none!important}}
+/* List groups and current-section navigation. */
+.list-panel{padding:22px;border:1px solid #ffffffed;border-radius:34px;background:linear-gradient(145deg,#ffffff70,#ffffff30);box-shadow:0 16px 48px #3444690b,inset 0 1px 0 #fff;scroll-margin-top:calc(var(--controls-height,80px) + 24px)}
+.list-panel>.section-heading{padding:0 2px 18px;margin-bottom:20px;border-bottom:1px solid #ffffffd9}
+.list-panel .card:last-child{margin-bottom:0}.list-panel .sort-list{padding-bottom:0}
+#sticky-controls .editor-nav a[aria-current="location"]{color:#30459b;background:linear-gradient(140deg,#fffffffa,#dce5ffc9);border-color:#b4c4f5;box-shadow:0 4px 14px #4e69b926,inset 0 1px 0 white;font-weight:750}
+#sticky-controls .editor-nav a[aria-current="location"] span{background:#526cc5;color:white}
+.delete-entry{font:inherit;font-size:13px;min-height:44px;padding:10px 14px;border:1px solid #ffffffd9;border-radius:999px;color:#955369;background:linear-gradient(145deg,#fff9fbd9,#ffe8ef8c);box-shadow:0 3px 12px #3946670d,inset 0 1px 0 #fff;cursor:pointer;font-weight:600}
+@media(max-width:650px){.list-panel{padding:14px;border-radius:30px}.list-panel>.section-heading{gap:10px;padding:2px 0 14px;margin-bottom:14px}.list-panel .section-heading h2{font-size:20px}.list-panel .section-actions{gap:6px}.list-panel .add-item,.list-panel .manage-toolbar button,.delete-entry{font-size:12px;padding:9px 11px}.list-panel .body{padding:18px}.list-panel .product-actions{gap:6px}.list-panel .product-actions .btn{flex-basis:130px;font-size:12px}.list-panel .product-actions button{font-size:12px;padding:10px}}
+@media(max-width:370px){.list-panel>.section-heading{flex-direction:column;align-items:flex-start}.list-panel .section-actions{margin-left:0}}
+@media print{.list-panel{padding:0;border:0;box-shadow:none}.delete-entry{display:none}}
 </style>
 </head>
 <body>
@@ -231,6 +241,7 @@ button:disabled{opacity:.5;cursor:default}
 
 
 <div class="editor-help" id="sort-help"><p>长按拖动</p></div>
+<section class="list-panel" id="shopping-panel" aria-label="购物清单区域">
 <div class="section-heading"><h2>购物清单</h2><div class="section-actions"><button class="add-item" data-list="shopping-list">＋添加商品</button><div id="management-home"><div id="management-controls"><div class="manage-toolbar"><button id="manage-items" type="button" aria-pressed="false">删除商品</button><button id="undo-delete" type="button" hidden>撤销最近删除</button></div><div id="selection-bar" hidden><strong id="selection-count">已选 0 件</strong><button type="button" data-select-list="shopping-list">全选购物清单</button><button type="button" data-select-list="backup-list">全选备选栏</button><button id="clear-selection" type="button">取消全选</button><button id="delete-selected" type="button" disabled>删除所选</button><small>删除后可撤销最近一次操作，刷新后仍可撤销。</small></div></div></div></div></div><div id="shopping-list" class="sort-list" aria-label="购物清单">
 
     <article class="card">
@@ -445,11 +456,12 @@ button:disabled{opacity:.5;cursor:default}
       </div>
     </article>
     
-</div></main>
+</div></section></main>
 
 
 <section class="backup-section">
-  <div class="section-heading"><h2>备选栏</h2><button class="add-item" data-list="backup-list">＋添加商品</button></div>
+ <div class="list-panel" id="backup-panel" role="region" aria-label="备选栏区域">
+  <div class="section-heading"><h2>备选栏</h2><div class="section-actions"><button class="add-item" data-list="backup-list">＋添加商品</button><button class="delete-entry" id="backup-manage" type="button" aria-pressed="false">删除商品</button></div></div>
   
   <div id="backup-list" class="sort-list" aria-label="备选栏">
     <article class="card backup-card">
@@ -542,7 +554,7 @@ button:disabled{opacity:.5;cursor:default}
       </div>
     </article>
     
-</div></section>
+</div></div></section>
 
 
 <footer>
@@ -696,6 +708,8 @@ function refreshSelection(){
  document.querySelector('#selection-count').textContent='已选 '+selected.size+' 件';deleteButton.disabled=!selected.size;
  cards.forEach(c=>{const box=c.querySelector('.select-item');if(box)box.checked=selected.has(c.dataset.id);c.classList.toggle('is-selected',selected.has(c.dataset.id));});
  undoButton.hidden=!deletionState.undo;measureControls();
+ const backupManage=document.querySelector('#backup-manage');
+ backupManage.textContent=selecting?'完成删除':'删除商品';backupManage.setAttribute('aria-pressed',String(selecting));
 }
 function bindSelection(card){
  const label=document.createElement('label');label.className='selection-control';const box=document.createElement('input');box.type='checkbox';box.className='select-item';box.setAttribute('aria-label','选择 '+title(card));label.append(box,document.createTextNode('选择此商品'));card.querySelector('.body').prepend(label);
@@ -705,6 +719,7 @@ function bindSelection(card){
 function persistDeletion(next){try{localStorage.setItem(deletionKey,JSON.stringify(next));deletionState=next;return true;}catch(_){say('当前浏览器无法保存删除结果，未执行删除。');return false;}}
 function restoreDeletion(){try{const saved=JSON.parse(localStorage.getItem(deletionKey));if(saved&&Array.isArray(saved.deleted)){deletionState=saved;cards.filter(c=>saved.deleted.includes(c.dataset.id)).forEach(c=>c.remove());}}catch(_){}refreshSelection();}
 manageButton.addEventListener('click',()=>{finish(true);selecting=!selecting;selected.clear();refreshSelection();});
+document.querySelector('#backup-manage').addEventListener('click',()=>manageButton.click());
 document.querySelectorAll('[data-select-list]').forEach(button=>button.addEventListener('click',()=>{items(document.getElementById(button.dataset.selectList)).forEach(c=>selected.add(c.dataset.id));refreshSelection();}));
 document.querySelector('#clear-selection').addEventListener('click',()=>{selected.clear();refreshSelection();});
 deleteButton.addEventListener('click',()=>{
@@ -860,6 +875,42 @@ window.addEventListener('blur', () => finish(true));
 document.addEventListener('visibilitychange', () => { if (document.hidden) finish(true); });
 document.querySelectorAll('.card-tools button').forEach(button => button.disabled = false);
 update(false);
+
+// Highlight the visible section, including history navigation and changing list heights.
+const navLinks=[...document.querySelectorAll('.editor-nav a[data-drop]')];
+const panels=[document.querySelector('#shopping-panel'),document.querySelector('#backup-panel')];
+let navFrame=0;
+function highlightSection(index){
+ navLinks.forEach((link,i)=>{if(i===index)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');});
+}
+function updateNavigation(){
+ navFrame=0;
+ const line=Math.min(innerHeight*.45,Math.max(0,stickyControls.getBoundingClientRect().bottom)+80);
+ const backup=panels[1].getBoundingClientRect();
+ const atBottom=scrollY+innerHeight>=document.documentElement.scrollHeight-3;
+ highlightSection(backup.top<=line||(atBottom&&backup.top<innerHeight)?1:0);
+}
+function queueNavigation(){if(!navFrame)navFrame=requestAnimationFrame(updateNavigation);}
+function navigateSection(index){
+ const panel=panels[index];
+ const offset=stickyControls.getBoundingClientRect().height+24;
+ window.scrollTo({top:Math.max(0,scrollY+panel.getBoundingClientRect().top-offset),behavior:'instant'});
+ highlightSection(index);queueNavigation();
+}
+navLinks.forEach((link,index)=>link.addEventListener('click',event=>{
+ if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+ event.preventDefault();
+ if(location.hash!==link.hash)history.pushState(null,'',link.hash);
+ navigateSection(index);
+}));
+function followHash(){const index=navLinks.findIndex(link=>link.hash===location.hash);if(index>=0)navigateSection(index);else queueNavigation();}
+window.addEventListener('scroll',queueNavigation,{passive:true});
+window.addEventListener('resize',queueNavigation);
+window.addEventListener('hashchange',followHash);
+window.addEventListener('popstate',followHash);
+if(window.ResizeObserver){const observer=new ResizeObserver(queueNavigation);panels.forEach(panel=>observer.observe(panel));observer.observe(stickyControls);}
+requestAnimationFrame(followHash);
+window.addEventListener('load',followHash,{once:true});
 
 })();
 
