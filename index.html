@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>韩国美妆购物清单</title>
+<style>
+:root {
+  --green:#184b31; --bg:#f5f6f3; --card:#fff; --muted:#6a706b; --pink:#a04d63;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;color:#1e211f}
+header{background:var(--green);color:white;padding:34px 22px 30px}
+header .inner{max-width:900px;margin:auto}
+h1{font-size:34px;line-height:1.15;margin:0 0 10px}
+header p{margin:6px 0;color:#dbe8df}
+.notice{font-size:13px;opacity:.9}
+main{max-width:900px;margin:auto;padding:18px}
+.card{background:var(--card);border-radius:20px;overflow:hidden;margin:0 0 18px;box-shadow:0 4px 20px rgba(0,0,0,.06);display:grid;grid-template-columns:44% 56%}
+.imgwrap{display:block;background:#fff;min-height:300px}
+.imgwrap img{width:100%;height:100%;min-height:300px;object-fit:contain;display:block;background:#fff}
+.body{padding:22px 22px 20px;position:relative}
+.num{display:inline-flex;width:38px;height:38px;border-radius:50%;align-items:center;justify-content:center;background:#e8f0ea;color:var(--green);font-weight:800;margin-bottom:10px}
+h2{font-size:24px;line-height:1.25;margin:0 0 8px}
+.sub{font-weight:700;color:var(--pink);font-size:17px;margin-bottom:12px}
+.kr{color:var(--muted);font-size:15px;line-height:1.5;margin-bottom:18px}
+.price{color:var(--green);font-size:22px;font-weight:800;margin-bottom:18px}
+.btn{display:inline-block;text-decoration:none;color:white;background:var(--green);padding:11px 14px;border-radius:12px;font-weight:700;font-size:14px}
+footer{max-width:900px;margin:auto;padding:4px 18px 34px;color:#747a75;font-size:13px;line-height:1.6}
+@media(max-width:650px){
+  .card{grid-template-columns:1fr}
+  .imgwrap,.imgwrap img{min-height:0}
+  .imgwrap img{aspect-ratio:1/1;object-fit:contain}
+  h1{font-size:28px}
+  h2{font-size:22px}
+}
+@media print{
+  body{background:white}
+  header{background:white;color:black;padding:16px 0}
+  header p{color:#333}
+  .card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+  .btn{display:none}
+}
+
+.backup-section{max-width:900px;margin:22px auto 0;padding:0 18px 18px}
+.backup-section>h2{font-size:28px;margin:0 0 8px;color:var(--green)}
+.backup-note{color:var(--muted);margin:0 0 14px}
+.backup-item{display:flex;gap:14px;background:white;border-radius:16px;padding:16px 18px;margin:10px 0;box-shadow:0 3px 14px rgba(0,0,0,.04)}
+.backup-no{min-width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#eef3ef;color:var(--green);font-weight:800}
+.backup-item h3{margin:0 0 4px;font-size:18px}
+.backup-item p{margin:0 0 6px;color:var(--muted);font-size:14px}
+.backup-item strong{color:var(--green)}
+
+.backup-note-inline{display:inline-block;margin:0 0 16px;padding:6px 10px;border-radius:999px;background:#eef3ef;color:var(--green);font-size:13px;font-weight:700}
+
+.interaction-state{padding:14px 16px;margin:0 0 16px;border:2px solid #ad7139;border-radius:12px;background:#fff3df;color:#70411a;line-height:1.6}.interaction-state.ready{border-color:#b9cdbd;background:#e8f0ea;color:var(--green)}
+.card{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;touch-action:auto}.card img,.card a{-webkit-touch-callout:none;-webkit-user-drag:none}.card-tools{justify-content:flex-end}
+/* 清单编辑：原商品内容与图片链接保持不变 */
+.editor-nav{position:sticky;top:0;z-index:20;display:flex;gap:10px;justify-content:center;padding:10px 14px;background:#f5f6f3f5;border-bottom:1px solid #d9e3da}
+.editor-nav a{color:var(--green);background:white;border:2px solid #b9cdbd;border-radius:12px;padding:10px 14px;min-height:44px;text-decoration:none;font-weight:700;text-align:center}
+.editor-help{background:#e8f0ea;padding:14px 16px;border-radius:14px;color:var(--green);line-height:1.7;margin-bottom:18px}
+.editor-help p{margin:0 0 6px}.editor-help small{display:block;color:#4b5d50}
+.card-tools{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;padding:10px 12px;background:#f0f5f1;border-bottom:1px solid #e0e9e2}
+.card-tools button{font:inherit;font-size:14px;min-height:44px;padding:8px 12px;border:1px solid #b9cdbd;border-radius:10px;background:white;color:var(--green);cursor:pointer}
+.card-tools button:disabled{opacity:.4;cursor:default}
+.card-tools .drag-handle{touch-action:none;cursor:grab;font-weight:700;background:#dfece2;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+button:focus-visible,a:focus-visible{outline:3px solid #a04d63;outline-offset:3px}
+.sort-list{min-height:110px;scroll-margin-top:90px;border-radius:16px}
+.sort-list:empty:after{content:'这一栏暂时为空 · 可拖入商品，或用另一栏的移动按钮添加';display:block;padding:32px 20px;border:2px dashed #b9cdbd;border-radius:16px;color:var(--muted)}
+.drop-placeholder{border:3px dashed var(--green);border-radius:20px;background:#e5f0e8;margin-bottom:18px;display:flex;align-items:center;justify-content:center;color:var(--green);font-weight:700;pointer-events:none}
+.drop-active{outline:3px solid #a04d63!important;outline-offset:2px;background:#e4f0e6!important}
+.drag-ghost{position:fixed;left:0;top:0;max-width:min(320px,85vw);padding:12px 16px;background:var(--green);color:white;border-radius:12px;box-shadow:0 8px 25px #0003;pointer-events:none;z-index:100;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.is-dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}
+.editor-status{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:50;max-width:90vw;width:max-content;background:var(--green);color:white;border-radius:12px;padding:12px 16px;pointer-events:none}
+.editor-status:empty{display:none}
+@media(max-width:650px){.card-tools{gap:6px}.card-tools button{padding:8px 10px}.editor-nav a{font-size:14px;padding:8px 10px}}
+@media print{.editor-nav,.editor-help,.card-tools,.editor-status{display:none!important}.sort-list:empty:after{display:none}}
+
+header{background:linear-gradient(115deg,#ffe59b 0%,#ffd4ba 48%,#ffc4da 100%);color:#422d3b}
+header p{color:#624c55}
+header .notice{color:#715960;opacity:1}
+.product-actions{display:flex;align-items:stretch;gap:8px}.product-actions .btn{flex:1;min-width:0;text-align:center;display:flex;align-items:center;justify-content:center}.product-actions button{flex:none}
+.product-actions .card-tools{display:contents}
+.product-actions .btn,.product-actions button{min-height:44px;font-size:14px;line-height:1.4;padding:11px 12px;border-radius:12px}
+.product-actions button{background:#fff0db;border:1px solid #efc190;color:#714826;font-weight:700}
+@media print{header{background:white;color:black}header p{color:#333}.product-actions button{display:none}}
+
+/* 全页蜜桃与柠檬配色 */
+:root{--green:#9c3456;--bg:#fff5ee;--muted:#78636c;--pink:#b23b65;--candy:linear-gradient(115deg,#ffe59b 0%,#ffd4ba 48%,#ffc4da 100%)}
+body{background:linear-gradient(115deg,#fff7df,#fff0e7 48%,#fff0f6);color:#422d3b}
+.editor-nav{background:var(--candy);border-color:#efb8ba}
+.editor-nav a{color:#85304f;border-color:#edafbc;background:#fff8ee}
+.interaction-state.ready,.editor-help{background:var(--candy);border-color:#eeb4bc;color:#653347}
+.editor-help small{color:#70505d}
+.num,.backup-no,.backup-note-inline{background:linear-gradient(120deg,#ffe59b,#ffd0df);color:#85304f}
+.card{box-shadow:0 5px 22px #ba617215}
+.product-actions .btn{background:linear-gradient(115deg,#ffcf77,#ffb5c9);color:#592b3f;border:1px solid #ed9db1}
+.product-actions button{background:#fff1d5;border-color:#e9b575;color:#714426}
+.drop-placeholder{background:linear-gradient(115deg,#fff0bf,#ffdae8);border-color:#c34372;color:#883454}
+.drop-active{outline-color:#c34372!important;background:#ffdcbd!important}
+.drag-ghost,.editor-status{background:#a63461;color:white}
+.sort-list:empty:after{border-color:#e4a8b4;color:#795966}
+footer{color:#78636c}
+@media print{body,header,.editor-nav{background:white}}
+html,body,.sort-list{overflow-anchor:none}
+
+/* 磨砂玻璃表面与柔和新拟物按压反馈 */
+body{background:radial-gradient(ellipse at 5% 15%,#ffe3a3 0%,transparent 48%),radial-gradient(ellipse at 95% 55%,#ffc4db 0%,transparent 52%),linear-gradient(130deg,#fff4d8,#ffe4df 50%,#f9dfeb);background-attachment:fixed}
+header{background:rgba(255,242,229,.28);border-bottom:1px solid rgba(255,255,255,.65)}
+.editor-nav{background:rgba(255,237,223,.76);-webkit-backdrop-filter:blur(18px) saturate(135%);backdrop-filter:blur(18px) saturate(135%);border-bottom:1px solid rgba(255,255,255,.8)}
+.card{background:rgba(255,249,246,.58);border:1px solid rgba(255,255,255,.78);border-radius:24px;box-shadow:8px 8px 24px rgba(145,84,107,.14),-6px -6px 20px rgba(255,255,255,.6),inset 1px 1px 0 rgba(255,255,255,.85);-webkit-backdrop-filter:blur(16px) saturate(130%);backdrop-filter:blur(16px) saturate(130%);margin-bottom:24px}
+.card .body{background:transparent}
+.imgwrap{margin:12px;border-radius:16px;overflow:hidden;background:rgba(255,250,245,.5)}
+.imgwrap img{background:transparent}
+.editor-help{background:rgba(255,249,240,.48);border:1px solid rgba(255,255,255,.8);box-shadow:6px 6px 18px rgba(145,84,107,.10),-5px -5px 16px rgba(255,255,255,.5);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#653347}
+.editor-nav a,.product-actions .btn,.product-actions button{border:1px solid rgba(255,255,255,.8);background:rgba(255,240,220,.7);color:#692c45;box-shadow:4px 4px 10px rgba(148,87,111,.18),-4px -4px 10px rgba(255,255,255,.75),inset 1px 1px 0 rgba(255,255,255,.6);transition:box-shadow .3s ease-in-out,background-color .3s ease-in-out}
+.product-actions .btn{background:rgba(255,194,210,.62)}
+.editor-nav a:hover,.product-actions .btn:hover,.product-actions button:hover{box-shadow:2px 2px 5px rgba(148,87,111,.18),-2px -2px 5px rgba(255,255,255,.7)}
+.editor-nav a:active,.product-actions .btn:active,.product-actions button:active{box-shadow:inset 3px 3px 7px rgba(148,87,111,.2),inset -3px -3px 7px rgba(255,255,255,.75)}
+.num,.backup-note-inline{background:rgba(255,219,214,.7);box-shadow:inset 2px 2px 5px rgba(148,87,111,.1),inset -2px -2px 5px rgba(255,255,255,.7)}
+@media(max-width:650px){.card{box-shadow:4px 4px 12px rgba(145,84,107,.14),-3px -3px 10px rgba(255,255,255,.6)}.imgwrap{margin-bottom:0}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.card,.editor-help{background:rgba(255,247,240,.94)}.editor-nav{background:#ffe9de}}
+@media(prefers-reduced-motion:reduce){.editor-nav a,.product-actions .btn,.product-actions button{transition:none}}
+@media print{body{background:white}.card{background:white;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}}
+
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0}.section-heading h2{margin:0}
+.add-item,.form-actions button{border:1px solid #fff9;background:#ffe2de;color:#692c45;border-radius:12px;padding:11px 15px;font:inherit;min-height:44px;cursor:pointer;box-shadow:3px 3px 8px #94576f22,-3px -3px 8px #fff8}
+#add-dialog{border:1px solid #fff9;border-radius:24px;background:#fff3ed;color:#422d3b;max-width:500px;width:calc(100% - 28px);max-height:88vh;overflow:auto;padding:24px;box-shadow:8px 8px 32px #64304233}#add-dialog::backdrop{background:#57354655;backdrop-filter:blur(5px)}
+#add-form label{display:block;margin:12px 0;font-weight:600}#add-form input,#add-form textarea{display:block;width:100%;font:inherit;padding:10px;margin-top:5px;border:1px solid #dab4bd;border-radius:10px;background:#fffaf6;color:#422d3b;min-height:44px}#add-form small{color:#70505d;line-height:1.5}.form-actions{display:flex;justify-content:flex-end;gap:10px}#form-error{color:#a02540}.empty-image{display:flex;align-items:center;justify-content:center;min-height:260px;color:#785060}
+@media print{.add-item,#add-dialog{display:none!important}}
+#read-product{font:inherit;padding:10px 15px;border:1px solid #edb7c5;border-radius:12px;background:#ffd9e2;color:#692c45;min-height:44px;cursor:pointer}#read-status{font-size:14px;line-height:1.6;color:#70505d}#read-variants{width:100%;padding:12px;border-radius:10px;background:#fff8ed;color:#422d3b;border:1px solid #dab4bd;font:inherit}#read-product:disabled{opacity:.5}
+#file-import{margin:12px 0;padding:12px;background:#fff1e6;border-radius:12px;font-size:14px;line-height:1.6}#file-import summary{cursor:pointer;color:#692c45;font-weight:600}
+
+.manage-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.manage-toolbar button,#selection-bar button{font:inherit;min-height:44px;padding:9px 12px;border:1px solid #edb7c5;border-radius:12px;background:#fff0e5;color:#692c45;cursor:pointer}
+#selection-bar{position:sticky;top:65px;z-index:19;padding:12px;background:#fff0eaf5;border:1px solid #ecc1cc;border-radius:16px;box-shadow:0 4px 14px #69404e22;display:flex;flex-wrap:wrap;align-items:center;gap:8px}#selection-bar[hidden]{display:none}#selection-bar small{flex-basis:100%;color:#765362}#delete-selected{background:#a42d51!important;color:white!important}#delete-selected:disabled{opacity:.45;cursor:default}
+.selection-control{display:none;align-items:center;gap:8px;min-height:44px;margin-bottom:10px;font-weight:600;color:#863c56;cursor:pointer}.select-item{width:22px;height:22px;accent-color:#a42d51}.selection-mode .selection-control{display:flex}.selection-mode .card{cursor:pointer}.card.is-selected{outline:3px solid #b23b65;outline-offset:-3px}.selection-mode .card .product-actions{opacity:.65}
+#assist-import{padding:12px;background:#fff0e5;border-radius:12px;font-size:14px;line-height:1.6}#assist-import summary{cursor:pointer;font-weight:600;color:#692c45}
+@media print{.manage-toolbar,#selection-bar,.selection-control{display:none!important}}
+
+/* Keep management actions within a document-wide sticky container. */
+#sticky-controls{position:sticky;top:0;z-index:30;background:rgba(255,237,228,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 4px 14px #69404e15}
+#sticky-controls .editor-nav{position:static;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
+#sticky-controls .manage-toolbar{max-width:900px;margin:0 auto;padding:8px 18px;gap:8px}
+#sticky-controls #selection-bar{position:static;max-width:864px;margin:0 auto;padding:8px 12px;gap:6px;border-radius:12px;background:#fff0eaf5}
+.sort-list,.card,.section-heading{scroll-margin-top:calc(var(--controls-height,140px) + 12px)}
+@media(max-width:650px){#sticky-controls #selection-bar button{font-size:13px;padding:8px}#sticky-controls #selection-bar small{font-size:12px}#sticky-controls .manage-toolbar{padding:6px 12px}}
+@media print{#sticky-controls{display:none!important}}
+
+/* Glass navigation and selection-only sticky management */
+header{background:linear-gradient(115deg,rgba(255,231,158,.38),rgba(255,202,220,.3));backdrop-filter:blur(24px) saturate(155%);-webkit-backdrop-filter:blur(24px) saturate(155%);border-bottom:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 0 #ffffffb3,0 8px 30px #9b536010}
+#sticky-controls{background:rgba(255,239,230,.36);backdrop-filter:blur(24px) saturate(145%);-webkit-backdrop-filter:blur(24px) saturate(145%)}
+#sticky-controls .editor-nav a{display:flex;flex:1;max-width:260px;justify-content:center;align-items:center;gap:7px;text-align:center;background:linear-gradient(120deg,#fffaf066,#ffdce866);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);border:1px solid #ffffffd9;box-shadow:inset 0 1px 0 #ffffffb3,0 4px 14px #93576c16}
+.section-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+#management-home .manage-toolbar{margin:0;padding:0;gap:8px}
+#sticky-controls #selection-bar{background:rgba(255,244,239,.66)}
+@media(max-width:650px){.section-heading{align-items:flex-start;flex-wrap:wrap}.section-actions{margin-left:auto}}
+@media print{#management-home{display:none}}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <h1>韩国 Olive Young 购物清单</h1>
+    
+    
+    <p class="notice">看图选购，自由整理你的韩国美妆购物清单。商品图片来自品牌与商城，本站非官方商城。</p>
+  </div>
+</header>
+<div id="sticky-controls">
+<nav class="editor-nav" aria-label="清单导航与跨栏投放区">
+<a href="#shopping-list" data-drop="shopping-list">购物清单 <span id="shopping-count">15</span></a>
+<a href="#backup-list" data-drop="backup-list">备选栏 <span id="backup-count">6</span></a>
+</nav>
+</div>
+<main>
+
+
+<div class="editor-help" id="sort-help"><p><strong>长按商品卡片约 0.4 秒，选中后拖动排序</strong>，鼠标与手机触控均可用。拖到虚线位置后松开；跨栏也可拖到顶部对应投放区，追加到该栏末尾。</p><small id="save-note">每个人都有自己的清单：添加、删除和排序仅保存在当前浏览器，换设备不会同步。</small></div>
+<div class="section-heading"><h2>购物清单</h2><div class="section-actions"><button class="add-item" data-list="shopping-list">＋添加商品</button><div id="management-home"><div id="management-controls"><div class="manage-toolbar"><button id="manage-items" type="button" aria-pressed="false">删除商品</button><button id="undo-delete" type="button" hidden>撤销最近删除</button></div><div id="selection-bar" hidden><strong id="selection-count">已选 0 件</strong><button type="button" data-select-list="shopping-list">全选购物清单</button><button type="button" data-select-list="backup-list">全选备选栏</button><button id="clear-selection" type="button">取消全选</button><button id="delete-selected" type="button" disabled>删除所选</button><small>删除后可撤销最近一次操作，刷新后仍可撤销。</small></div></div></div></div></div><div id="shopping-list" class="sort-list" aria-label="购物清单">
+
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000238763" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023876317ko.jpg?QT=85&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="THE SAEM 三色遮瑕盘">
+      </a>
+      <div class="body">
+        <div class="num">01</div>
+        <h2>THE SAEM 三色遮瑕盘</h2>
+        <div class="sub">01 校色米肤色</div>
+        <div class="kr">得鲜完美遮瑕三色遮瑕盘</div>
+        <div class="price">₩10,260 ≈ ¥51</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000238763" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://us.oliveyoung.com/products/UA75004336" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://use-image.oliveyoung.com/images/prd/8809954944406/thumbnail/7e000786-770f-48a9-abc0-b354412fd650.png?AR=0&amp;QT=85&amp;RS=1000X1000&amp;SF=webp" alt="Alternativestereo 奶油腮红">
+      </a>
+      <div class="body">
+        <div class="num">02</div>
+        <h2>Alternativestereo 奶油腮红</h2>
+        <div class="sub">04 玫瑰莓果色</div>
+        <div class="kr">柔润奶油腮红 · 04 玫瑰莓果色</div>
+        <div class="price">约 ₩16,000–17,500 ≈ ¥79–87</div>
+        <div class="product-actions"><a class="btn" href="https://us.oliveyoung.com/products/UA75004336" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000132148" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0013/A00000013214819ko.jpg?QT=85&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="SO.NATURAL FIXX 定妆喷雾">
+      </a>
+      <div class="body">
+        <div class="num">03</div>
+        <h2>SO.NATURAL FIXX 定妆喷雾</h2>
+        <div class="sub">黑瓶粉字 · 75 毫升</div>
+        <div class="kr">自然哑光定妆喷雾</div>
+        <div class="price">₩14,250 ≈ ¥71</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000132148" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000211946" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/A00000021194602ko.jpg?QT=85&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="CAREPLUS 痘痘贴">
+      </a>
+      <div class="body">
+        <div class="num">04</div>
+        <h2>CAREPLUS 痘痘贴</h2>
+        <div class="sub">189 片</div>
+        <div class="kr">伤口遮盖痘痘贴 · 189 片</div>
+        <div class="price">₩10,400 ≈ ¥52</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000211946" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000237449" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023744915ko.png?QT=100&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="Anua 精华喷雾">
+      </a>
+      <div class="body">
+        <div class="num">05</div>
+        <h2>Anua 精华喷雾</h2>
+        <div class="sub">多聚脱氧核苷酸＋玻尿酸 · 100 毫升</div>
+        <div class="kr">多聚脱氧核苷酸与玻尿酸保湿胶囊喷雾</div>
+        <div class="price">₩21,500 ≈ ¥107</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000237449" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000263939" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0026/A00000026393905ko.png?QT=100&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="Ongredients 黄色乳液">
+      </a>
+      <div class="body">
+        <div class="num">06</div>
+        <h2>Ongredients 黄色乳液</h2>
+        <div class="sub">舒缓屏障修护乳液（加强版）· 220 毫升</div>
+        <div class="kr">舒缓修护皮肤屏障乳液（加强版）</div>
+        <div class="price">₩28,600 ≈ ¥142</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000263939" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000258670" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0025/A00000025867021ko.jpg?QT=85&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="Mamonde 妆前水">
+      </a>
+      <div class="body">
+        <div class="num">07</div>
+        <h2>Mamonde 妆前水</h2>
+        <div class="sub">玫瑰焕亮液体面膜／妆前水</div>
+        <div class="kr">玫瑰焕亮液体面膜／妆前水</div>
+        <div class="price">₩30,000 ≈ ¥149</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000258670" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000221707" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022170709ko.png?QT=100&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="Mediheal 蓝色小方瓶精华">
+      </a>
+      <div class="body">
+        <div class="num">08</div>
+        <h2>Mediheal 蓝色小方瓶精华</h2>
+        <div class="sub">低分子玻尿酸水分精华 · 40 毫升</div>
+        <div class="kr">低分子玻尿酸密集保湿精华</div>
+        <div class="price">₩14,600 ≈ ¥72</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000221707" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000225736" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022573651ko.jpg?QT=85&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="ILSO 一苏导出液">
+      </a>
+      <div class="body">
+        <div class="num">09</div>
+        <h2>ILSO 一苏导出液</h2>
+        <div class="sub">皮脂软化导出液 · 150 克</div>
+        <div class="kr">黑头皮脂软化导出液</div>
+        <div class="price">₩18,900 ≈ ¥94</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000225736" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000198001" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0019/A00000019800112ko.jpg?QT=85&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="OBgE 粉底棒">
+      </a>
+      <div class="body">
+        <div class="num">10</div>
+        <h2>OBgE 粉底棒</h2>
+        <div class="sub">02 米肤色</div>
+        <div class="kr">自然遮盖粉底棒 · 02 号</div>
+        <div class="price">₩31,450 ≈ ¥156</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000198001" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000229158" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022915802ko.jpg?QT=85&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="DASHU 粉底棒">
+      </a>
+      <div class="body">
+        <div class="num">11</div>
+        <h2>DASHU 粉底棒</h2>
+        <div class="sub">02 中性米肤色</div>
+        <div class="kr">男士多效遮盖粉底棒 · 02 号</div>
+        <div class="price">₩29,000 ≈ ¥144</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000229158" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000229644" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A00000022964418ko.jpg?QT=85&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="Re:dence 淡痘印精华">
+      </a>
+      <div class="body">
+        <div class="num">12</div>
+        <h2>Re:dence 淡痘印精华</h2>
+        <div class="sub">肤色与斑点修护安瓶 · 30 毫升</div>
+        <div class="kr">肤色与斑点修护安瓶精华</div>
+        <div class="price">₩17,900 ≈ ¥89</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000229644" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000120656" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0012/A000000120656105ko.jpg?QT=85&amp;SF=webp&amp;l=ko&amp;sharpen=1x0.5" alt="too cool for school 卧蚕笔">
+      </a>
+      <div class="body">
+        <div class="num">13</div>
+        <h2>too cool for school 卧蚕笔</h2>
+        <div class="sub">艺术课堂卧蚕笔 · 色号待定</div>
+        <div class="kr">艺术课堂柔滑显色卧蚕笔</div>
+        <div class="price">₩12,000 起 ≈ ¥60 起</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000120656" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000106440" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0010/A00000010644014ko.jpg?l=ko" alt="Lilybyred 眼线胶笔">
+      </a>
+      <div class="body">
+        <div class="num">14</div>
+        <h2>Lilybyred 眼线胶笔</h2>
+        <div class="sub">#19 雾感玫瑰棕</div>
+        <div class="kr">持久防水眼线胶笔 · 19 号雾感玫瑰棕</div>
+        <div class="price">近期活动约 ₩7,000 ≈ ¥35</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000106440" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+
+
+    <article class="card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000106440" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0010/A00000010644010ko.jpg?l=ko" alt="Lilybyred 眼线胶笔">
+      </a>
+      <div class="body">
+        <div class="num">15</div>
+        <h2>Lilybyred 眼线胶笔</h2>
+        <div class="sub">#10 闪耀金</div>
+        <div class="kr">持久防水眼线胶笔 · 10 号闪耀金</div>
+        <div class="price">近期活动约 ₩7,000 ≈ ¥35</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000106440" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到备选栏</button></div></div>
+      </div>
+    </article>
+    
+</div></main>
+
+
+<section class="backup-section">
+  <div class="section-heading"><h2>备选栏</h2><button class="add-item" data-list="backup-list">＋添加商品</button></div>
+  
+  <div id="backup-list" class="sort-list" aria-label="备选栏">
+    <article class="card backup-card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000198320" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0019/A00000019832009ko.jpg?l=ko" alt="AESTURA 365 屏障修护面霜">
+      </a>
+      <div class="body">
+        <div class="num">B1</div>
+        <h2>AESTURA 365 屏障修护面霜</h2>
+        <div class="sub">屏障修护面霜 · 80 毫升</div>
+        <div class="kr">屏障修护 365 面霜 · 80 毫升</div>
+        <div class="price">约 ₩26,700–29,700 ≈ ¥132–147</div>
+        <div class="backup-note-inline">到店看活动/套装再买</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000198320" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到购物清单</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card backup-card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000235856" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0023/A00000023585628ko.jpg?l=ko" alt="MEDIHEAL 修护棉片（备选）">
+      </a>
+      <div class="body">
+        <div class="num">B2</div>
+        <h2>MEDIHEAL 修护棉片（备选）</h2>
+        <div class="sub">同系列热门套装 · 含积雪草修护棉片赠品</div>
+        <div class="kr">积雪草痘印修护面霜套装（赠送棉片）</div>
+        <div class="price">约 ₩16,830 ≈ ¥84</div>
+        <div class="backup-note-inline">想买棉片可到店优先看同系列 棉片／赠棉片套装</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000235856" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到购物清单</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card backup-card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000223414" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0022/A000000223414107ko.jpg?l=ko" alt="MEDIHEAL 面膜 10+1">
+      </a>
+      <div class="body">
+        <div class="num">B3</div>
+        <h2>MEDIHEAL 面膜 10+1</h2>
+        <div class="sub">精华面膜 · 10 片／10+1 片套装</div>
+        <div class="kr">精华面膜 · 10 片／10+1 片套装</div>
+        <div class="price">约 ₩10,000 ≈ ¥50</div>
+        <div class="backup-note-inline">补货型好价</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000223414" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到购物清单</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card backup-card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000215559" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0021/A00000021555919ko.jpg?l=ko" alt="SKIN1004 防晒">
+      </a>
+      <div class="body">
+        <div class="num">B4</div>
+        <h2>SKIN1004 防晒</h2>
+        <div class="sub">玻尿酸积雪草水感防晒精华</div>
+        <div class="kr">马达加斯加积雪草玻尿酸水感防晒精华</div>
+        <div class="price">约 ₩28,000 ≈ ¥139</div>
+        <div class="backup-note-inline">你清单里缺防晒</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000215559" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到购物清单</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card backup-card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000171423" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0017/A000000171423155ko.png?l=ko" alt="UNOVE 深层受损修护发膜">
+      </a>
+      <div class="body">
+        <div class="num">B5</div>
+        <h2>UNOVE 深层受损修护发膜</h2>
+        <div class="sub">护发修护 · 320 毫升双支／套装</div>
+        <div class="kr">深层受损修护发膜 · 320 毫升</div>
+        <div class="price">约 ₩26,900–29,800 ≈ ¥133–148</div>
+        <div class="backup-note-inline">护发很值得顺手买</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000171423" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到购物清单</button></div></div>
+      </div>
+    </article>
+    
+    <article class="card backup-card">
+      <a class="imgwrap" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000243174" target="_blank" rel="noopener">
+        <img loading="lazy" src="https://image.oliveyoung.co.kr/cfimages/cf-goods/uploads/images/thumbnails/10/0000/0024/A00000024317418ko.jpg?l=ko" alt="colorgram 唇釉">
+      </a>
+      <div class="body">
+        <div class="num">B6</div>
+        <h2>colorgram 唇釉</h2>
+        <div class="sub">裸感柔雾唇釉／套装</div>
+        <div class="kr">裸感柔雾唇釉</div>
+        <div class="price">约 ₩17,900 ≈ ¥89（套装价）</div>
+        <div class="backup-note-inline">适合看到喜欢色号再入</div>
+        <div class="product-actions"><a class="btn" href="https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000243174" target="_blank" rel="noopener">打开 Olive Young 商品页</a><div class="card-tools" role="group" aria-label="商品位置调整"><button disabled type="button" data-action="transfer">移到购物清单</button></div></div>
+      </div>
+    </article>
+    
+</div></section>
+
+
+<footer>
+价格按 2026-09-15 前后查询结果整理。Alternativestereo 使用 Olive Young US 官方商品图；04 Rose Berry 色号文字已单独标注。实际韩国门店价格、活动与库存可能变化。
+</footer>
+<div class="editor-status" role="status" aria-live="polite" aria-atomic="true"></div>
+<dialog id="add-dialog" aria-labelledby="add-title"><form id="add-form">
+<h2 id="add-title">添加商品</h2>
+<label>商品名称（必填）<input name="name" required maxlength="120" autocomplete="off" placeholder="例如：保湿防晒霜"></label>
+<label>商品链接（选填）<input name="url" type="url" placeholder="https://…，用于打开商品页"></label>
+<details id="assist-import"><summary>辅助填入：已有清单链接／网页文件</summary><p>已有清单链接可带出旧资料；新网站仅尝试读取，可能失败。Olive Young 新链接目前需手填或导入网页。</p><button type="button" id="read-product">尝试填入资料</button><p id="read-status" role="status" aria-live="polite"></p>
+<details id="file-import"><summary>导入保存的商品网页</summary><p>选择实际商品详情页的 HTML 文件，仅在本机解析。请核对读取的价格和规格。</p><label>网页文件<input type="file" id="product-html" accept=".html,.htm,text/html"></label></details><select id="read-variants" aria-label="选择规格或色号" hidden></select></details>
+<label>规格／色号（选填）<input name="spec" maxlength="150" placeholder="例如：50 毫升／02 自然色"></label>
+<label>价格（选填）<input name="price" maxlength="80" placeholder="注明币种，例如 ₩15,000 或 ¥75"></label>
+<label>备注（选填）<textarea name="note" maxlength="500" rows="2" placeholder="用途、想买的数量、到店注意事项"></textarea></label>
+<label>上传商品图片（选填）<input name="imageFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
+<label>或填写图片网址（选填）<input name="imageUrl" type="url" placeholder="https://…"></label>
+<small>上传图片优先于图片网址。新增商品保存在当前浏览器，不会同步到其他设备。</small>
+<p id="form-error" role="alert"></p><div class="form-actions"><button type="button" id="cancel-add">取消</button><button type="submit">添加到清单</button></div>
+</form></dialog>
+<script>
+(() => {
+'use strict';
+const stickyControls=document.querySelector('#sticky-controls');
+function measureControls(){document.documentElement.style.setProperty('--controls-height',stickyControls.getBoundingClientRect().height+'px');}
+if(window.ResizeObserver)new ResizeObserver(measureControls).observe(stickyControls);
+window.addEventListener('resize',measureControls);measureControls();
+const lists = [...document.querySelectorAll('.sort-list')];
+const cards = [...document.querySelectorAll('article.card')];
+const status = document.querySelector('.editor-status');
+const key = 'oliveyoung-sort-20260915-v1';
+const customKey = 'oliveyoung-custom-20260915-v1';
+let custom = [], destination = null;
+const dialog = document.querySelector('#add-dialog'), form = document.querySelector('#add-form');
+const readButton=document.querySelector('#read-product'), readStatus=document.querySelector('#read-status'), variants=document.querySelector('#read-variants');
+let importController=null, importVersion=0, importedOptions=[];
+function resetImport(){importVersion++;if(importController)importController.abort();readButton.disabled=false;readStatus.textContent='';variants.hidden=true;variants.replaceChildren();importedOptions=[];}
+function canonicalLink(value){try{const u=new URL(value);if(u.hostname==='www.oliveyoung.co.kr'&&u.searchParams.has('goodsNo'))return u.origin+u.pathname+'?goodsNo='+encodeURIComponent(u.searchParams.get('goodsNo'));u.hash='';return u.href;}catch(_){return value;}}
+function setField(name,value){form.elements[name].value=value||'';}
+function applyOption(option){setField('spec',option.spec);setField('price',option.price);setField('imageUrl',option.image);}
+variants.addEventListener('change',()=>{const option=importedOptions[Number(variants.value)];if(option)applyOption(option);});
+form.elements.url.addEventListener('input',resetImport);
+dialog.addEventListener('close',resetImport);
+function safeImage(value,base){try{return webURL(new URL(value,base).href);}catch(_){return '';}}
+function showOptions(options){importedOptions=options;variants.replaceChildren();options.forEach((v,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=v.spec||'默认规格';variants.append(o);});variants.hidden=options.length<2;if(options.length)applyOption(options[0]);}
+async function fetchProduct(url,signal){const response=await fetch(url,{signal,credentials:'omit',referrerPolicy:'no-referrer'});if(!response.ok)throw Error('网站返回 '+response.status);return response;}
+function extractHTML(html,url){
+ const doc=new DOMParser().parseFromString(html,'text/html');let product;
+ const heading=doc.querySelector('.prd_name, [itemprop="name"]')?.textContent?.trim()||'';
+ if(/access denied|just a moment|사용자 확인|로그인/i.test(doc.title)&&!heading&&!doc.querySelector('script[type="application/ld+json"]'))throw Error('这是登录页或访问验证页，请保存实际商品详情页。');
+ function visit(obj){if(!obj||typeof obj!=='object'||product)return;if(Array.isArray(obj)){obj.forEach(visit);return;}const types=[obj['@type']].flat();if(types.includes('Product')){product=obj;return;}if(obj['@graph'])visit(obj['@graph']);}
+ doc.querySelectorAll('script[type="application/ld+json"]').forEach(s=>{try{visit(JSON.parse(s.textContent));}catch(_){}});
+ const meta=key=>doc.querySelector('meta[property="'+key+'"],meta[name="'+key+'"]')?.content||'';
+ if(!product&&!meta('og:title')&&!heading)throw Error('页面未提供可识别的商品资料');
+ const offer=product?.offers, single=Array.isArray(offer)?offer[0]:offer;
+ const amount=single?.price??single?.lowPrice??meta('product:price:amount');const currency=single?.priceCurrency||meta('product:price:currency');
+ const img=[product?.image].flat()[0];
+ return {name:product?.name||heading||meta('og:title'),options:[{spec:product?.color||product?.size||'',price:amount!==''&&amount!=null?`${currency||'币种待核对'} ${amount}`:'',image:safeImage(typeof img==='string'?img:img?.url||meta('og:image'),url)}]};
+}
+document.querySelector('#product-html').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;resetImport();const version=importVersion;
+ try{if(file.size>12*1024*1024)throw Error('网页文件超过 12 MB，请保存“仅 HTML”后重试。');
+ const url=webURL(form.elements.url.value.trim());if(!url)throw Error('请先填写对应的商品链接，以便解析图片地址。');
+ const result=extractHTML(await file.text(),url);if(version!==importVersion)return;
+ setField('name',result.name);form.elements.imageFile.value='';showOptions(result.options);
+ readStatus.textContent='已从保存的网页填入资料，请核对。此价格为网页保存时的资料；未提供的字段仍需补充。';
+ }catch(error){if(version===importVersion)readStatus.textContent='未能导入：'+error.message;}finally{e.target.value='';}
+});
+readButton.addEventListener('click',async()=>{
+ resetImport();let url;try{url=webURL(form.elements.url.value.trim());if(!url)throw Error();}catch(_){readStatus.textContent='请先填写完整的 http 或 https 商品链接。';return;}
+ const version=importVersion;readButton.disabled=true;readStatus.textContent='正在读取商品…';importController=new AbortController();const controller=importController;const timeout=setTimeout(()=>controller.abort(),12000);
+ try{
+   let result, source='';
+   // Existing card information is a local snapshot, not live website data.
+   const matches=cards.filter(c=>[...c.querySelectorAll('a[href]')].some(a=>canonicalLink(a.href)===canonicalLink(url)));
+   if(matches.length){result={name:matches[0].querySelector('h2').textContent,options:matches.map(c=>({spec:c.querySelector('.sub').textContent,price:c.querySelector('.price').textContent,image:c.querySelector('img')?.src||''}))};source='已从现有清单填入，价格与规格未实时更新。';}
+   else{
+     const parsed=new URL(url);
+     if(parsed.hostname==='www.oliveyoung.co.kr'){
+       readStatus.textContent='此官网目前拒绝直接读取新商品。请在浏览器打开商品页并保存 HTML，通过下方入口导入，或手动填写。';
+       document.querySelector('#file-import').open=true;return;
+     }
+     if(/\/products\/[^/]+\/?$/.test(parsed.pathname)){
+       try{const endpoint=new URL(url);endpoint.pathname=endpoint.pathname.replace(/\/$/,'')+'.json';endpoint.search='';const raw=await(await fetchProduct(endpoint.href,controller.signal)).json();const product=raw.product;
+         if(product?.title&&Array.isArray(product.variants)){result={name:product.title,options:product.variants.map(v=>({spec:v.title==='Default Title'?'':v.title,price:v.price?String(v.price)+'（原站金额，币种请核对）':'',image:safeImage(product.images?.find(i=>i.id===v.image_id)?.src||product.image?.src||product.images?.[0]?.src||'',url)}))};}
+       }catch(error){if(controller.signal.aborted)throw error;}
+     }
+     if(!result)result=extractHTML(await(await fetchProduct(url,controller.signal)).text(),url);
+     source='已读取网站提供的商品资料。请核对价格、币种和规格；空白字段需手动补充。';
+   }
+   if(version!==importVersion)return;
+   setField('name',result.name);form.elements.imageFile.value='';showOptions(result.options);readStatus.textContent=source;
+ }catch(error){if(version===importVersion)readStatus.textContent=controller.signal.aborted?'读取超时。可以重试，或直接手动填写。':'无法自动读取：网站可能限制跨网站访问，或未提供商品资料。请手动填写，已填内容会保留。';}
+ finally{clearTimeout(timeout);if(version===importVersion)readButton.disabled=false;}
+});
+
+
+function webURL(value) {
+  if (!value) return '';
+  const u = new URL(value); if (!['http:','https:'].includes(u.protocol)) throw Error('链接请使用 http 或 https。'); return u.href;
+}
+function makeCard(data) {
+  const card = document.createElement('article'); card.className = 'card';
+  card.innerHTML = '<div class="imgwrap"></div><div class="body"><div class="num"></div><h2></h2><div class="sub"></div><div class="kr"></div><div class="price"></div><div class="product-actions"><div class="card-tools"><button type="button" data-action="transfer">移到另一栏</button></div></div></div>';
+  for(const [sel,val] of [['h2',data.name],['.sub',data.spec],['.kr',data.note],['.price',data.price]])card.querySelector(sel).textContent=val||'';
+  const wrap=card.querySelector('.imgwrap');
+  if (data.image) { const img=document.createElement('img');img.src=data.image;img.alt=data.name;img.loading='lazy';wrap.append(img); }
+  else {wrap.classList.add('empty-image');wrap.textContent='暂无商品图片';}
+  if(data.url){const a=document.createElement('a');a.className='btn';a.href=webURL(data.url);a.target='_blank';a.rel='noopener';a.textContent='打开商品页';card.querySelector('.product-actions').prepend(a);}
+  return card;
+}
+function restoreCustom(){
+  try {const stored=JSON.parse(localStorage.getItem(customKey)||'[]');if(!Array.isArray(stored))return;
+    const seen=new Set();for(const data of stored){if(!data||typeof data.id!=='string'||!data.id.startsWith('custom-')||seen.has(data.id)||typeof data.name!=='string')continue;
+      if(data.image&&!/^data:image\/(jpeg|png|webp);base64,/.test(data.image))data.image=webURL(data.image);
+      const card=makeCard(data);seen.add(data.id);custom.push(data);cards.push(card);bindCard(card,data.id);(document.getElementById(data.list)||lists[1]).append(card);
+    }
+  }catch(_){/* Invalid stored entries do not prevent the original list from loading. */}
+}
+async function readImage(file){
+ if(!file)return '';
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('请选择 JPG、PNG 或 WebP 图片。');
+ if(file.size>15*1024*1024)throw Error('图片过大，请选择 15 MB 以内的图片。');
+ const source=URL.createObjectURL(file);try{const img=new Image();img.src=source;await img.decode();const ratio=Math.min(1,900/Math.max(img.width,img.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*ratio));canvas.height=Math.max(1,Math.round(img.height*ratio));const ctx=canvas.getContext('2d');ctx.fillStyle='#fff5ee';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.82);}finally{URL.revokeObjectURL(source);}
+}
+document.querySelectorAll('.add-item').forEach(button=>button.addEventListener('click',()=>{destination=document.getElementById(button.dataset.list);form.reset();resetImport();document.querySelectorAll("#add-form details").forEach(d=>d.open=false);document.querySelector('#form-error').textContent='';document.querySelector('#add-title').textContent='添加到'+destination.getAttribute('aria-label');dialog.showModal();form.elements.name.focus();}));
+document.querySelector('#cancel-add').addEventListener('click',()=>dialog.close());
+form.addEventListener('submit',async e=>{
+ e.preventDefault();const submit=form.querySelector('[type="submit"]');submit.disabled=true;document.querySelector('#form-error').textContent='';
+ try{const name=form.elements.name.value.trim();if(!name)throw Error('请填写商品名称。');
+ const data={id:'custom-'+crypto.randomUUID(),list:destination.id,name,spec:form.elements.spec.value.trim(),price:form.elements.price.value.trim(),note:form.elements.note.value.trim(),url:webURL(form.elements.url.value.trim()),image:await readImage(form.elements.imageFile.files[0])||webURL(form.elements.imageUrl.value.trim())};
+ const card=makeCard(data);try{localStorage.setItem(customKey,JSON.stringify([...custom,data]));}catch(_){throw Error('浏览器存储空间不足或禁止保存，商品尚未添加。请缩小图片或改用图片网址。');}
+ custom.push(data);cards.push(card);bindCard(card,data.id);destination.append(card);update();dialog.close();card.scrollIntoView({block:'nearest'});say('已添加并保存：'+name);
+ }catch(error){document.querySelector('#form-error').textContent=error.message||'添加失败，请重试。';}finally{submit.disabled=false;}
+});
+
+let timer, drag = null, frame;
+const deletionKey='oliveyoung-deletions-v1';
+let selecting=false, selected=new Set(), deletionState={deleted:[],undo:null};
+const manageButton=document.querySelector('#manage-items'), selectionBar=document.querySelector('#selection-bar'), deleteButton=document.querySelector('#delete-selected'), undoButton=document.querySelector('#undo-delete');
+function refreshSelection(){
+ const management=document.querySelector('#management-controls');
+ const destination=selecting?stickyControls:document.querySelector('#management-home');
+ if(management.parentElement!==destination){
+  const focused=document.activeElement;
+  destination.append(management);
+  if(management.contains(focused))focused.focus({preventScroll:true});
+ }
+
+ document.body.classList.toggle('selection-mode',selecting);selectionBar.hidden=!selecting;manageButton.textContent=selecting?'完成删除':'删除商品';manageButton.setAttribute('aria-pressed',String(selecting));
+ document.querySelector('#selection-count').textContent='已选 '+selected.size+' 件';deleteButton.disabled=!selected.size;
+ cards.forEach(c=>{const box=c.querySelector('.select-item');if(box)box.checked=selected.has(c.dataset.id);c.classList.toggle('is-selected',selected.has(c.dataset.id));});
+ undoButton.hidden=!deletionState.undo;measureControls();
+}
+function bindSelection(card){
+ const label=document.createElement('label');label.className='selection-control';const box=document.createElement('input');box.type='checkbox';box.className='select-item';box.setAttribute('aria-label','选择 '+title(card));label.append(box,document.createTextNode('选择此商品'));card.querySelector('.body').prepend(label);
+ box.addEventListener('change',()=>{if(box.checked)selected.add(card.dataset.id);else selected.delete(card.dataset.id);refreshSelection();});
+ card.addEventListener('click',e=>{if(!selecting||e.target.closest('.selection-control'))return;e.preventDefault();e.stopImmediatePropagation();if(selected.has(card.dataset.id))selected.delete(card.dataset.id);else selected.add(card.dataset.id);refreshSelection();},true);
+}
+function persistDeletion(next){try{localStorage.setItem(deletionKey,JSON.stringify(next));deletionState=next;return true;}catch(_){say('当前浏览器无法保存删除结果，未执行删除。');return false;}}
+function restoreDeletion(){try{const saved=JSON.parse(localStorage.getItem(deletionKey));if(saved&&Array.isArray(saved.deleted)){deletionState=saved;cards.filter(c=>saved.deleted.includes(c.dataset.id)).forEach(c=>c.remove());}}catch(_){}refreshSelection();}
+manageButton.addEventListener('click',()=>{finish(true);selecting=!selecting;selected.clear();refreshSelection();});
+document.querySelectorAll('[data-select-list]').forEach(button=>button.addEventListener('click',()=>{items(document.getElementById(button.dataset.selectList)).forEach(c=>selected.add(c.dataset.id));refreshSelection();}));
+document.querySelector('#clear-selection').addEventListener('click',()=>{selected.clear();refreshSelection();});
+deleteButton.addEventListener('click',()=>{
+ if(!selected.size)return;
+ const snapshot=lists.map(l=>items(l).map(c=>c.dataset.id));const ids=snapshot.flat().filter(id=>selected.has(id));
+ const next={deleted:[...new Set([...deletionState.deleted,...ids])],undo:{ids,snapshot,previous:deletionState.deleted}};
+ if(!persistDeletion(next))return;
+ cards.filter(c=>ids.includes(c.dataset.id)).forEach(c=>c.remove());selected.clear();update();refreshSelection();say('已删除 '+ids.length+' 件，可撤销最近一次删除。');
+});
+undoButton.addEventListener('click',()=>{
+ const undo=deletionState.undo;if(!undo)return;
+ if(!persistDeletion({deleted:undo.previous||[],undo:null}))return;
+ undo.ids.forEach(id=>{const card=cards.find(c=>c.dataset.id===id);if(!card)return;const li=undo.snapshot.findIndex(ids=>ids.includes(id));if(li<0)return;const ids=undo.snapshot[li];const next=ids.slice(ids.indexOf(id)+1).map(i=>cards.find(c=>c.dataset.id===i)).find(c=>c?.parentElement===lists[li]);lists[li].insertBefore(card,next||null);});
+ update();refreshSelection();say('已恢复最近删除的商品。');
+});
+
+const items = list => [...list.children].filter(el => el.matches('article.card'));
+const title = card => card.querySelector('h2').textContent + ' · ' + card.querySelector('.sub').textContent;
+function say(text) { clearTimeout(timer); status.textContent = text; timer = setTimeout(() => status.textContent = '', 4500); }
+function update(save = true) {
+  lists.forEach((list, li) => items(list).forEach((card, i, all) => {
+    card.querySelector('.num').textContent = li ? 'B' + (i + 1) : String(i + 1).padStart(2, '0');
+    card.classList.toggle('backup-card', !!li);
+    card.querySelector('[data-action="transfer"]').textContent = li ? '移到购物清单' : '移到备选栏';
+  }));
+  document.querySelector('#shopping-count').textContent = items(lists[0]).length;
+  document.querySelector('#backup-count').textContent = items(lists[1]).length;
+  if (save) try { localStorage.setItem(key, JSON.stringify(lists.map(list => items(list).map(c => c.dataset.id)))); }
+  catch (_) { document.querySelector('#save-note').textContent = '当前浏览器无法保存顺序；本次打开期间可正常调整，关闭后可能恢复初始清单。'; }
+}
+function announce(card) { say(`${title(card)}：已移到${card.parentElement.getAttribute('aria-label')}第 ${items(card.parentElement).indexOf(card) + 1} 位`); }
+function bindCard(card, id) {
+  card.dataset.id = id;
+  bindSelection(card);
+  const bar = card.querySelector('.card-tools');
+  bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', '调整 ' + title(card));
+  bar.addEventListener('click', e => {
+    const button = e.target.closest('[data-action]'); if (!button || drag) return;
+    lists.find(l => l !== card.parentElement).append(card);
+    update();
+    button.focus({preventScroll:true});
+    card.scrollIntoView({block:'nearest'}); announce(card);
+  });
+  card.tabIndex = 0;
+  card.addEventListener('contextmenu', e => e.preventDefault());
+  card.addEventListener('dragstart', e => e.preventDefault());
+  card.addEventListener('pointerdown', e => {
+    if (selecting || e.target.closest('input,label') || e.pointerType === 'touch' || drag || e.button !== 0 || e.target.closest('button')) return;
+    begin(card, e.pointerId, e.clientX, e.clientY, false);
+  });
+  card.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) { finish(true); return; }
+    if (selecting || drag || e.target.closest('button,input,label')) return;
+    const t = e.touches[0]; begin(card, t.identifier, t.clientX, t.clientY, true);
+  }, {passive:true});
+
+}
+cards.forEach((card,i)=>bindCard(card,String(i)));
+restoreCustom();
+try {
+  const saved = JSON.parse(localStorage.getItem(key));
+  if (Array.isArray(saved) && saved.length === 2 && saved.every(Array.isArray)) {
+    const ids = saved.flat();
+    if (new Set(ids).size === ids.length && ids.every(id => cards.some(c => c.dataset.id === id)))
+      saved.forEach((ids, i) => ids.forEach(id => lists[i].append(cards.find(c => c.dataset.id === id))));
+  }
+} catch (_) { /* Storage is optional, including file previews and private browsing. */ }
+restoreDeletion();
+update(false);
+function clearTarget() { document.querySelectorAll('.drop-active').forEach(el => el.classList.remove('drop-active')); }
+function locate() {
+  const d = drag; if (!d?.active) return;
+  d.ghost.style.transform = `translate(${Math.max(8, Math.min(d.x + 12, innerWidth - Math.min(320, innerWidth * .85) - 8))}px,${Math.min(innerHeight - 60, d.y + 18)}px)`;
+  clearTarget(); d.target = null;
+  const hit = document.elementFromPoint(d.x, d.y);
+  const dock = hit?.closest('[data-drop]');
+  if (dock) {
+    const list = document.getElementById(dock.dataset.drop);
+    dock.classList.add('drop-active'); list.append(d.placeholder); d.target = list; return;
+  }
+  const list = hit?.closest('.sort-list');
+  if (!list) return;
+  list.classList.add('drop-active'); d.target = list;
+  const next = items(list).filter(c => c !== d.card).find(c => { const r = c.getBoundingClientRect(); return d.y < r.top + r.height / 2; });
+  list.insertBefore(d.placeholder, next || null);
+}
+function tick() {
+  if (!drag?.active) return;
+  const y = drag.y, edge = 90;
+  const delta = y < edge ? -Math.ceil((edge - y) / 5) : y > innerHeight - edge ? Math.ceil((y - innerHeight + edge) / 5) : 0;
+  if (delta && !document.elementFromPoint(drag.x, y)?.closest('.editor-nav')) { window.scrollBy(0, delta); locate(); }
+  frame = requestAnimationFrame(tick);
+}
+let suppressClickUntil = 0;
+function begin(card, id, x, y, touch) {
+  drag = {card, handle:card, id, x, y, startX:x, startY:y, touch, active:false, target:null};
+  drag.hold = setTimeout(activate, 400);
+}
+function activate() {
+  const d = drag; if (!d || d.active) return;
+  d.active = true;
+  d.placeholder = document.createElement('div'); d.placeholder.className = 'drop-placeholder';
+  d.placeholder.style.height = d.card.getBoundingClientRect().height + 'px'; d.placeholder.textContent = '已选中 · 松开放到这里';
+  d.card.before(d.placeholder); d.card.style.display = 'none';
+  d.ghost = document.createElement('div'); d.ghost.className = 'drag-ghost'; d.ghost.textContent = title(d.card); d.ghost.setAttribute('aria-hidden','true'); document.body.append(d.ghost);
+  document.body.classList.add('is-dragging'); say('已选中商品，可以拖动'); frame = requestAnimationFrame(tick); locate();
+}
+function move(x, y, event) {
+  const d = drag; if (!d) return;
+  d.x = x; d.y = y;
+  if (!d.active) {
+    if (Math.hypot(x-d.startX, y-d.startY) > 10) finish(true);
+    return;
+  }
+  if (event.cancelable) event.preventDefault();
+  locate();
+}
+document.addEventListener('pointermove', e => { if (drag && !drag.touch && e.pointerId === drag.id) move(e.clientX,e.clientY,e); }, {passive:false});
+document.addEventListener('touchmove', e => {
+  if (!drag?.touch) return;
+  if (e.touches.length !== 1) { finish(true); return; }
+  const t = [...e.touches].find(t => t.identifier === drag.id);
+  if (t) move(t.clientX,t.clientY,e);
+}, {passive:false});
+document.addEventListener('touchend', e => {
+  if (!drag?.touch) return;
+  const t = [...e.changedTouches].find(t => t.identifier === drag.id);
+  if (!t) return;
+  if (drag.active) { if(e.cancelable)e.preventDefault(); drag.x=t.clientX;drag.y=t.clientY;locate(); }
+  finish();
+}, {passive:false});
+document.addEventListener('touchcancel', () => { if(drag?.touch)finish(true); });
+document.addEventListener('click', e => { if(Date.now()<suppressClickUntil) {e.preventDefault();e.stopPropagation();} }, true);
+function finish(cancel = false) {
+  const d = drag; if (!d) return;
+  const moved = d.active && d.target && !cancel;
+  if (moved) d.placeholder.before(d.card);
+  clearTimeout(d.hold); drag = null; cancelAnimationFrame(frame);
+  if (d.handle.hasPointerCapture(d.id)) d.handle.releasePointerCapture(d.id);
+  if (d.active) {
+    suppressClickUntil = Date.now() + 500;
+    d.card.style.removeProperty('display'); d.placeholder.remove(); d.ghost.remove();
+    document.body.classList.remove('is-dragging'); clearTarget(); update();
+    d.handle.focus({preventScroll:true});
+    if (moved) { d.card.scrollIntoView({block:'nearest'}); announce(d.card); } else say('已取消拖动，位置未改变');
+  }
+}
+document.addEventListener('pointerup', e => { if (drag && !drag.touch && e.pointerId === drag.id) { if(drag.active) {drag.x=e.clientX;drag.y=e.clientY;locate();} finish(); } });
+document.addEventListener('pointercancel', e => { if (drag && !drag.touch && e.pointerId === drag.id) finish(true); });
+document.addEventListener('lostpointercapture', e => { if (drag && !drag.touch && e.pointerId === drag.id) finish(true); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && drag) { e.preventDefault(); finish(true); } });
+window.addEventListener('blur', () => finish(true));
+document.addEventListener('visibilitychange', () => { if (document.hidden) finish(true); });
+document.querySelectorAll('.card-tools button').forEach(button => button.disabled = false);
+update(false);
+
+})();
+
+</script>
+</body>
+</html>
