@@ -238,12 +238,18 @@ body:has(#add-dialog[open]){overflow:hidden}
 .product-actions .purchase-toggle[aria-pressed="true"]{color:#51378c;background:linear-gradient(135deg,#eee8ffef,#e0d5ffe6);border-color:#b9a7e2;box-shadow:inset 0 1px 0 #fff,0 3px 12px #7358a51a}
 .purchase-toggle:focus-visible{outline:3px solid #8065c2;outline-offset:3px}
 @media print{.card.is-purchased .body h2:after{content:' · 已选购';font-size:14px;color:#51378c}}
-.product-note{display:block;width:100%;margin-top:18px;padding-top:14px;border-top:1px solid #ffffffc9;cursor:text}
-.note-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:13px;font-weight:600;color:#535e7a}
+.product-note{display:block;width:100%;min-width:0;margin:0 0 16px}
+.note-rail{display:flex;align-items:center;gap:8px;overflow-x:auto;max-width:100%;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-x:contain;padding:3px 0;touch-action:pan-x pan-y}
+.note-rail::-webkit-scrollbar{display:none;width:0;height:0}
+.note-rail>*{flex:none;white-space:nowrap}.note-rail .backup-note-inline{margin:0}
+.note-tag-edit,.note-add{font:inherit;font-size:12px;color:#78648d;border:1px solid #d9cfee;background:#ece8fc99;border-radius:999px;padding:8px 12px;min-height:36px;cursor:pointer}
+.note-add{background:#ffffff85;border-style:dashed;color:#596887}.note-tag-edit:hover{background:#e4dbf9}
+.note-editor{margin-top:8px;padding:10px;background:#ffffff70;border:1px solid #fff;border-radius:16px}
+.note-editor input{display:block;box-sizing:border-box;width:100%;padding:10px;border:1px solid #d6dbec;border-radius:10px;font:inherit;font-size:16px;background:#ffffffb3;user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
+.note-editor-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.note-editor button{font:inherit;font-size:12px;padding:8px 12px;min-height:36px;border:1px solid #d6dbec;border-radius:999px;background:#ffffffa6;color:#535e7a;cursor:pointer}.note-editor .note-delete{color:#a02540}
+.note-editor[hidden]{display:none}
 .note-state{font-size:11px;font-weight:400;color:#737b91}.note-state.is-error{color:#a02540}
-.product-note textarea{display:block;box-sizing:border-box;width:100%;min-height:76px;max-height:240px;padding:11px 13px;resize:vertical;border:1px solid #d6dbec;border-radius:16px;background:#ffffff80;color:var(--ink);font:inherit;font-size:16px;line-height:1.5;user-select:text;-webkit-user-select:text;-webkit-touch-callout:default;cursor:text;scrollbar-width:thin}
-.product-note textarea::placeholder{color:#858da3;font-size:13px}
-@media print{.product-note textarea{border:0;background:none;resize:none}.note-state{display:none}}
+@media print{.note-rail{overflow:visible;flex-wrap:wrap}.note-rail>*{white-space:normal}.note-editor,.note-add,.note-state{display:none!important}}
 </style>
 </head>
 <body>
@@ -822,16 +828,27 @@ function update(save = true) {
 }
 function announce(card) { say(`${title(card)}：已移到${card.parentElement.getAttribute('aria-label')}第 ${items(card.parentElement).indexOf(card) + 1} 位`); }
 function bindNote(card,id){
-  const label=document.createElement('label');label.className='product-note';
-  const heading=document.createElement('span');heading.className='note-heading';heading.append(document.createTextNode('我的备注'));
-  const state=document.createElement('span');state.className='note-state';state.textContent='自动保存';state.id='note-state-'+id;state.setAttribute('role','status');heading.append(state);
-  const field=document.createElement('textarea');field.rows=2;field.maxLength=500;field.placeholder='购买数量、色号、使用感受…';field.setAttribute('aria-label',title(card)+'：我的备注');field.setAttribute('aria-describedby',state.id);
-  const storageKey='oliveyoung-note-v1:'+id;field.value=custom.find(item=>item.id===id)?.note||'';
-  function failed(){state.textContent='未保存，请重试';state.classList.add('is-error');}
-  try{const saved=localStorage.getItem(storageKey);if(saved!==null)field.value=saved;}catch(_){failed();}
-  function saveNote(){try{localStorage.setItem(storageKey,field.value);state.textContent='已保存';state.classList.remove('is-error');}catch(_){failed();}}
-  field.addEventListener('input',saveNote);field.addEventListener('change',saveNote);
-  label.append(heading,field);card.querySelector('.body').append(label);
+  const area=document.createElement('div');area.className='product-note';
+  const rail=document.createElement('div');rail.className='note-rail';rail.tabIndex=0;rail.setAttribute('role','region');rail.setAttribute('aria-label',title(card)+'：备注，左右滑动查看');
+  const builtins=[...card.querySelectorAll('.backup-note-inline')];
+  const state=document.createElement('div');state.className='note-state';state.setAttribute('role','status');
+  const editor=document.createElement('form');editor.className='note-editor';editor.hidden=true;
+  const field=document.createElement('input');field.maxLength=500;field.required=true;field.placeholder='输入一条备注';field.setAttribute('aria-label',title(card)+'：备注内容');
+  const actions=document.createElement('div');actions.className='note-editor-actions';
+  function button(text,cls,type='button'){const b=document.createElement('button');b.type=type;b.className=cls;b.textContent=text;return b;}
+  const save=button('保存','note-save','submit'),cancel=button('取消','note-cancel'),remove=button('删除','note-delete'),add=button('＋备注','note-add');
+  actions.append(save,cancel,remove);editor.append(field,actions);area.append(rail,editor,state);
+  const storageKey='oliveyoung-note-tags-v2:'+id;let notes=[],editing=-1;
+  try{const saved=localStorage.getItem(storageKey);if(saved!==null){const parsed=JSON.parse(saved);if(!Array.isArray(parsed)||!parsed.every(v=>typeof v==='string'))throw Error();notes=parsed;}else{const old=localStorage.getItem('oliveyoung-note-v1:'+id)??custom.find(item=>item.id===id)?.note??'';notes=old.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);}}catch(_){state.textContent='无法读取备注，请稍后重试';}
+  function open(index){editing=index;field.value=index<0?'':notes[index];remove.hidden=index<0;editor.hidden=false;state.textContent='';field.focus();}
+  function close(){editor.hidden=true;add.focus({preventScroll:true});}
+  function render(){rail.replaceChildren(...builtins);notes.forEach((text,index)=>{const tag=button(text,'note-tag-edit');tag.setAttribute('aria-label','编辑备注：'+text);tag.addEventListener('click',()=>open(index));rail.append(tag);});rail.append(add);}
+  function persist(next){try{localStorage.setItem(storageKey,JSON.stringify(next));notes=next;render();close();state.textContent='';state.classList.remove('is-error');return true;}catch(_){state.textContent='未保存，请重试';state.classList.add('is-error');return false;}}
+  add.addEventListener('click',()=>open(-1));cancel.addEventListener('click',close);
+  editor.addEventListener('submit',e=>{e.preventDefault();const text=field.value.trim();if(!text){field.setCustomValidity('请输入备注内容');field.reportValidity();return;}const next=[...notes];if(editing<0)next.push(text);else next[editing]=text;if(persist(next))rail.scrollLeft=rail.scrollWidth;});
+  field.addEventListener('input',()=>field.setCustomValidity(''));field.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();close();}});
+  remove.addEventListener('click',()=>{if(editing>=0)persist(notes.filter((_,i)=>i!==editing));});
+  render();card.querySelector('.product-actions').before(area);
 }
 function bindCard(card, id) {
   card.dataset.id = id;
@@ -859,12 +876,12 @@ function bindCard(card, id) {
   card.addEventListener('contextmenu', e => {if(!e.target.closest('.product-note'))e.preventDefault();});
   card.addEventListener('dragstart', e => {if(!e.target.closest('.product-note'))e.preventDefault();});
   card.addEventListener('pointerdown', e => {
-    if (selecting || e.target.closest('input,label') || e.pointerType === 'touch' || drag || e.button !== 0 || e.target.closest('button')) return;
+    if (selecting || e.target.closest('input,label,.product-note') || e.pointerType === 'touch' || drag || e.button !== 0 || e.target.closest('button')) return;
     begin(card, e.pointerId, e.clientX, e.clientY, false);
   });
   card.addEventListener('touchstart', e => {
     if (e.touches.length !== 1) { finish(true); return; }
-    if (selecting || drag || e.target.closest('button,input,label')) return;
+    if (selecting || drag || e.target.closest('button,input,label,.product-note')) return;
     const t = e.touches[0]; begin(card, t.identifier, t.clientX, t.clientY, true);
   }, {passive:true});
 
