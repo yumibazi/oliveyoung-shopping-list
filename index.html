@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>韩国美妆购物清单</title>
+<title>韩国购物清单 · Olive Young / 大创 / NYUNYU</title>
 <style>
 :root {
   --green:#184b31; --bg:#f5f6f3; --card:#fff; --muted:#6a706b; --pink:#a04d63;
@@ -250,11 +250,51 @@ body:has(#add-dialog[open]){overflow:hidden}
 .note-editor[hidden]{display:none}
 .note-state{font-size:11px;font-weight:400;color:#737b91}.note-state.is-error{color:#a02540}
 @media print{.note-rail{overflow:visible;flex-wrap:wrap}.note-rail>*{white-space:normal}.note-editor,.note-add,.note-state{display:none!important}}
+/* Store navigation shares one editor; each store keeps independent local data. */
+.store-eyebrow{font-size:11px;letter-spacing:.16em;font-weight:600;color:#778098;margin-bottom:12px}
+.store-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:6px;margin-bottom:8px;border:var(--rim);border-radius:24px;background:linear-gradient(125deg,#ffffffe0,#f7f7ffb8);box-shadow:0 8px 28px #34446912,inset 0 1px 0 #fff;backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%)}
+.store-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-decoration:none;min-width:0;min-height:56px;border:1px solid transparent;border-radius:18px;padding:8px 5px;color:#6b748b;font-size:14px;font-weight:650;white-space:nowrap}
+.store-nav small{font-size:10px;font-weight:400;letter-spacing:.03em;color:#778098}
+.store-nav a:hover{background:#ffffffad}.store-nav a[aria-current=page]{background:linear-gradient(140deg,#fff,#e4e8ffd6);border-color:#c4cef1;color:#3e5296;box-shadow:0 3px 12px #5268a517,inset 0 1px 0 #fff}
+body[data-store=daiso] .store-nav a[aria-current=page]{background:linear-gradient(140deg,#fff,#ffe5d7de);border-color:#f0c9b9;color:#9b5146}
+body[data-store=nyunyu] .store-nav a[aria-current=page]{background:linear-gradient(140deg,#fff,#efdcffde);border-color:#d9c2ef;color:#795198}
+.sort-list:empty:after{content:attr(data-empty);text-align:center;white-space:pre-line;line-height:1.8;padding:36px 18px}
+@media(max-width:400px){.store-nav a{font-size:12px}.store-nav small{font-size:9px}.store-nav{gap:3px}}
+@media(prefers-reduced-transparency:reduce){.store-nav{background:#f9f9fd;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.store-nav{background:#f9f9fd}}
+.action-label-compact{display:none}
+/* Compact mobile rows keep the photo and product details side by side. */
+@media screen and (max-width:650px){
+  header{margin:12px auto 10px;padding:0 12px}header .inner{padding:18px 16px;border-radius:24px}header h1{font-size:23px;line-height:1.3}header .notice{margin-top:8px;font-size:11px}.store-eyebrow{margin-bottom:8px;font-size:10px}
+  main,.backup-section,footer{padding-left:12px;padding-right:12px}#sticky-controls{width:calc(100% - 24px)}.store-nav{padding:4px;margin-bottom:6px;border-radius:21px}.store-nav a{min-height:46px;padding:5px;font-size:12px;border-radius:17px}.store-nav small{font-size:9px}
+  #sticky-controls .editor-nav{padding:4px}#sticky-controls .editor-nav a{min-height:44px;font-size:13px;padding:7px 10px}
+  #sort-help{margin:7px auto 10px;padding:4px 12px;font-size:11px}
+  .list-panel{padding:10px;border-radius:24px}.list-panel>.section-heading{padding:0 0 10px;margin-bottom:10px;gap:8px}.list-panel .section-heading h2{font-size:18px}
+  .list-panel .card{position:relative;display:grid;grid-template-columns:84px minmax(0,1fr);gap:4px 12px;padding:12px;border-radius:20px;margin-bottom:10px;align-items:start}
+  .list-panel .card .body{display:contents}
+  .list-panel .card .imgwrap{grid-column:1;grid-row:1/5;width:84px;height:104px;min-height:0;margin:0;border-radius:12px;align-self:start}
+  .list-panel .card .imgwrap img{height:104px;max-height:104px;width:100%;min-height:0;aspect-ratio:auto;object-fit:contain}
+  .list-panel .card .empty-image{font-size:11px;text-align:center;padding:6px}
+  .list-panel .card .num{position:absolute;top:7px;left:7px;width:22px;height:22px;min-height:22px;margin:0;font-size:9px;background:#ffffffed;z-index:1}
+  .list-panel .card h2{grid-column:2;grid-row:1;font-size:15px;line-height:1.4;margin:0;overflow-wrap:anywhere}
+  .list-panel .card .sub{grid-column:2;grid-row:2;font-size:12px;line-height:1.4;margin:0;overflow-wrap:anywhere}
+  .list-panel .card .kr{grid-column:2;grid-row:3;font-size:11px;line-height:1.4;margin:0;overflow-wrap:anywhere}
+  .list-panel .card .price{grid-column:2;grid-row:4;font-size:16px;line-height:1.35;margin:3px 0}
+  .list-panel .card .selection-control{grid-column:1/-1;margin:0;font-size:12px}
+  .list-panel .card .product-note{grid-column:1/-1;margin:3px 0 0}
+  .list-panel .card .note-rail{gap:6px;padding:2px 0}.note-tag-edit,.note-add{font-size:11px;padding:7px 10px}
+  .list-panel .card .product-actions{grid-column:1/-1;margin-top:3px;gap:5px;flex-wrap:nowrap}
+  .list-panel .card .product-actions .btn,.list-panel .card .product-actions button{flex:1 1 0;min-width:0;min-height:44px;padding:7px 4px;font-size:11px;line-height:1.3;white-space:nowrap}
+  .action-label-full{display:none}.action-label-compact{display:inline}
+  .backup-section{margin-top:18px}
+}
+@media screen and (max-width:350px){.list-panel .card{grid-template-columns:72px minmax(0,1fr);gap:4px 9px;padding:10px}.list-panel .card .imgwrap{width:72px;height:96px}.list-panel .card .imgwrap img{height:96px;max-height:96px}.list-panel .card h2{font-size:14px}.list-panel .card .price{font-size:15px}}
 </style>
 </head>
 <body>
 <header>
   <div class="inner">
+    <div class="store-eyebrow">韩国购物手册</div>
     <h1>韩国 Olive Young 购物清单</h1>
     
     
@@ -262,6 +302,11 @@ body:has(#add-dialog[open]){overflow:hidden}
   </div>
 </header>
 <div id="sticky-controls">
+<nav class="store-nav" aria-label="选择店铺">
+<a href="?store=oliveyoung" data-store="oliveyoung"><span>Olive Young</span><small>美妆 · 护肤</small></a>
+<a href="?store=daiso" data-store="daiso"><span>韩国大创</span><small>DAISO · 生活好物</small></a>
+<a href="?store=nyunyu" data-store="nyunyu"><span>NYUNYU</span><small>饰品 · 穿搭</small></a>
+</nav>
 <nav class="editor-nav" aria-label="清单导航与跨栏投放区">
 <a href="#shopping-list" data-drop="shopping-list">购物清单 <span id="shopping-count">15</span></a>
 <a href="#backup-list" data-drop="backup-list">备选栏 <span id="backup-count">6</span></a>
@@ -610,6 +655,27 @@ body:has(#add-dialog[open]){overflow:hidden}
 <script>
 (() => {
 'use strict';
+const storeInfo={
+  oliveyoung:{name:'韩国 Olive Young',description:'看图选购，自由整理你的韩国美妆购物清单。商品图片来自品牌与商城，本站非官方商城。',example:'例如：保湿防晒霜'},
+  daiso:{name:'韩国大创 DAISO',description:'收纳、生活用品和美妆小物，把想买的大创好物记在这里。',example:'例如：旅行收纳袋'},
+  nyunyu:{name:'NYUNYU',description:'耳饰、项链和穿搭配饰，整理属于你的 NYUNYU 购物清单。',example:'例如：银色耳饰'}
+};
+const requestedStore=new URL(location.href).searchParams.get('store');
+const storeId=Object.hasOwn(storeInfo,requestedStore)?requestedStore:'oliveyoung',store=storeInfo[storeId];
+const storagePrefix=storeId==='oliveyoung'?'oliveyoung':'korea-shopping-'+storeId;
+document.body.dataset.store=storeId;
+document.title=store.name+' 购物清单';
+document.querySelector('header h1').textContent=store.name+' 购物清单';
+document.querySelector('header .notice').textContent=store.description;
+document.querySelector('#add-form [name=name]').placeholder=store.example;
+document.querySelector('#add-form [name=url]').placeholder='粘贴商品链接或完整分享文字';
+document.querySelectorAll('.store-nav a').forEach(link=>{const url=new URL(location.href);url.searchParams.set('store',link.dataset.store);url.hash='';link.href=url.href;if(link.dataset.store===storeId)link.setAttribute('aria-current','page');});
+if(storeId!=='oliveyoung'){
+  document.querySelectorAll('.sort-list').forEach(list=>list.replaceChildren());
+  document.querySelector('footer').textContent='这是你的 '+store.name+' 个人清单，商品资料可自行添加。价格和库存以门店为准，本站非官方商城。';
+}
+document.querySelector('#shopping-list').dataset.empty='还没有想买的商品\n点击「＋添加商品」，开始整理清单';
+document.querySelector('#backup-list').dataset.empty='把待考虑的商品放在这里\n可直接添加，也可从购物清单移入';
 const stickyControls=document.querySelector('#sticky-controls');
 function measureControls(){document.documentElement.style.setProperty('--controls-height',stickyControls.getBoundingClientRect().height+'px');}
 if(window.ResizeObserver)new ResizeObserver(measureControls).observe(stickyControls);
@@ -617,9 +683,9 @@ window.addEventListener('resize',measureControls);measureControls();
 const lists = [...document.querySelectorAll('.sort-list')];
 const cards = [...document.querySelectorAll('article.card')];
 const status = document.querySelector('.editor-status');
-const key = 'oliveyoung-sort-20260915-v1';
-const customKey = 'oliveyoung-custom-20260915-v1';
-const purchasedKey = 'oliveyoung-purchased-v1';
+const key = storagePrefix+'-sort-20260915-v1';
+const customKey = storagePrefix+'-custom-20260915-v1';
+const purchasedKey = storagePrefix+'-purchased-v1';
 let purchased = new Set();
 try{const saved=JSON.parse(localStorage.getItem(purchasedKey)||'[]');if(Array.isArray(saved))purchased=new Set(saved.filter(id=>typeof id==='string'));}catch(_){/* Keep the list usable when storage is unavailable. */}
 let custom = [], destination = null;
@@ -768,7 +834,7 @@ form.addEventListener('submit',async e=>{
 });
 
 let timer, drag = null, frame;
-const deletionKey='oliveyoung-deletions-v1';
+const deletionKey=storagePrefix+'-deletions-v1';
 let selecting=false, selected=new Set(), deletionState={deleted:[],undo:null};
 const manageButton=document.querySelector('#manage-items'), selectionBar=document.querySelector('#selection-bar'), deleteButton=document.querySelector('#delete-selected'), undoButton=document.querySelector('#undo-delete');
 function refreshSelection(){
@@ -838,11 +904,22 @@ function bindNote(card,id){
   function button(text,cls,type='button'){const b=document.createElement('button');b.type=type;b.className=cls;b.textContent=text;return b;}
   const save=button('保存','note-save','submit'),cancel=button('取消','note-cancel'),remove=button('删除','note-delete'),add=button('＋备注','note-add');
   actions.append(save,cancel,remove);editor.append(field,actions);area.append(rail,editor,state);
-  const storageKey='oliveyoung-note-tags-v2:'+id;let notes=[],editing=-1;
-  try{const saved=localStorage.getItem(storageKey);if(saved!==null){const parsed=JSON.parse(saved);if(!Array.isArray(parsed)||!parsed.every(v=>typeof v==='string'))throw Error();notes=parsed;}else{const old=localStorage.getItem('oliveyoung-note-v1:'+id)??custom.find(item=>item.id===id)?.note??'';notes=old.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);}}catch(_){state.textContent='无法读取备注，请稍后重试';}
+  const storageKey=storagePrefix+'-note-tags-v3:'+id;let notes=[],editing=-1;
+  function readNotes(value){const parsed=JSON.parse(value);if(!Array.isArray(parsed)||!parsed.every(v=>typeof v==='string'))throw Error();return parsed;}
+  try{
+    const saved=localStorage.getItem(storageKey);
+    if(saved!==null)notes=readNotes(saved);
+    else{
+      const previous=localStorage.getItem(storagePrefix+'-note-tags-v2:'+id);
+      const old=localStorage.getItem(storagePrefix+'-note-v1:'+id)??custom.find(item=>item.id===id)?.note??'';
+      const personal=previous!==null?readNotes(previous):old.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      notes=[...builtins.map(node=>node.textContent.trim()).filter(Boolean),...personal];
+    }
+  }catch(_){state.textContent='无法读取备注，请稍后重试';}
+  builtins.forEach(node=>node.remove());
   function open(index){editing=index;field.value=index<0?'':notes[index];remove.hidden=index<0;editor.hidden=false;state.textContent='';field.focus();}
   function close(){editor.hidden=true;add.focus({preventScroll:true});}
-  function render(){rail.replaceChildren(...builtins);notes.forEach((text,index)=>{const tag=button(text,'note-tag-edit');tag.setAttribute('aria-label','编辑备注：'+text);tag.addEventListener('click',()=>open(index));rail.append(tag);});rail.append(add);}
+  function render(){rail.replaceChildren();notes.forEach((text,index)=>{const tag=button(text,'note-tag-edit');tag.setAttribute('aria-label','编辑备注：'+text);tag.addEventListener('click',()=>open(index));rail.append(tag);});rail.append(add);}
   function persist(next){try{localStorage.setItem(storageKey,JSON.stringify(next));notes=next;render();close();state.textContent='';state.classList.remove('is-error');return true;}catch(_){state.textContent='未保存，请重试';state.classList.add('is-error');return false;}}
   add.addEventListener('click',()=>open(-1));cancel.addEventListener('click',close);
   editor.addEventListener('submit',e=>{e.preventDefault();const text=field.value.trim();if(!text){field.setCustomValidity('请输入备注内容');field.reportValidity();return;}const next=[...notes];if(editing<0)next.push(text);else next[editing]=text;if(persist(next))rail.scrollLeft=rail.scrollWidth;});
@@ -853,6 +930,8 @@ function bindNote(card,id){
 function bindCard(card, id) {
   card.dataset.id = id;
   bindSelection(card);
+  const productLink=card.querySelector('.product-actions a.btn');
+  if(productLink){const fullLabel=document.createElement('span');fullLabel.className='action-label-full';fullLabel.textContent=productLink.textContent;const compactLabel=document.createElement('span');compactLabel.className='action-label-compact';compactLabel.textContent='商品页 ↗';productLink.setAttribute('aria-label',productLink.textContent);productLink.replaceChildren(fullLabel,compactLabel);}
   const purchaseButton=document.createElement('button');purchaseButton.type='button';purchaseButton.className='purchase-toggle';
   function refreshPurchased(){const bought=purchased.has(id);card.classList.toggle('is-purchased',bought);purchaseButton.textContent=bought?'✓ 已选购':'标记已购';purchaseButton.setAttribute('aria-pressed',String(bought));purchaseButton.setAttribute('aria-label',title(card)+(bought?'：已选购，点击取消':'：未选购，点击标记已购'));}
   purchaseButton.addEventListener('click',()=>{
