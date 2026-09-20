@@ -289,6 +289,15 @@ body[data-store=nyunyu] .store-nav a[aria-current=page]{background:linear-gradie
   .backup-section{margin-top:18px}
 }
 @media screen and (max-width:350px){.list-panel .card{grid-template-columns:72px minmax(0,1fr);gap:4px 9px;padding:10px}.list-panel .card .imgwrap{width:72px;height:96px}.list-panel .card .imgwrap img{height:96px;max-height:96px}.list-panel .card h2{font-size:14px}.list-panel .card .price{font-size:15px}}
+
+.sync-bar{max-width:1100px;margin:0 auto 12px;padding:0 20px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;font-size:12px;color:#646c80}
+.sync-bar button,#sync-dialog button{border:1px solid #fff;border-radius:16px;padding:10px 15px;background:#ffffffa8;color:#3d4260;cursor:pointer;font:inherit;min-height:42px}
+#sync-status{max-width:100%;text-align:center;line-height:1.6}
+#sync-dialog{width:min(440px,calc(100% - 24px));max-height:85dvh;border:1px solid #fff;border-radius:26px;padding:24px;background:#f7f6fdeb;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-sizing:border-box;overflow-y:auto;scrollbar-width:none;color:#3d4260}
+#sync-dialog::-webkit-scrollbar{display:none}#sync-dialog::backdrop{background:#25213955;backdrop-filter:blur(6px)}
+#sync-dialog h2{margin:0 0 12px}#sync-dialog p{line-height:1.6;font-size:13px;overflow-wrap:anywhere}#sync-dialog label{display:block;margin:12px 0;font-size:14px}#sync-dialog input{box-sizing:border-box;width:100%;margin-top:6px;padding:12px;border:1px solid #ddd9ec;border-radius:12px;font:inherit;background:#fff}
+#sync-dialog .sync-actions{display:flex;gap:8px;flex-wrap:wrap}#sync-dialog button:focus-visible{outline:3px solid #8587da;outline-offset:2px}#sync-error{color:#a52b49;min-height:1.4em}#sync-close{float:right}#sync-conflict{border:1px solid #dbaab7;border-radius:15px;padding:12px;margin-top:12px}
+@media print{.sync-bar,#sync-dialog{display:none!important}}
 </style>
 </head>
 <body>
@@ -301,6 +310,7 @@ body[data-store=nyunyu] .store-nav a[aria-current=page]{background:linear-gradie
     <p class="notice">看图选购，自由整理你的韩国美妆购物清单。商品图片来自品牌与商城，本站非官方商城。</p>
   </div>
 </header>
+<div class="sync-bar"><button id="sync-account" type="button">登录同步</button><span id="sync-status" role="status" aria-live="polite">正在连接…</span></div>
 <div id="sticky-controls">
 <nav class="store-nav" aria-label="选择店铺">
 <a href="?store=oliveyoung" data-store="oliveyoung"><span>Olive Young</span><small>美妆 · 护肤</small></a>
@@ -649,12 +659,23 @@ body[data-store=nyunyu] .store-nav a[aria-current=page]{background:linear-gradie
 <label>备注（选填）<textarea name="note" maxlength="500" rows="2" placeholder="用途、想买的数量、到店注意事项"></textarea></label>
 <label>上传商品图片（选填）<input name="imageFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
 <label>或填写图片网址（选填）<input name="imageUrl" type="url" placeholder="https://…"></label>
-<small>上传图片优先于图片网址。新增商品保存在当前浏览器，不会同步到其他设备。</small>
+<small>上传图片优先于图片网址。登录后新增商品会自动同步；未登录时仅保存在此设备。</small>
 </div><p id="form-error" role="alert"></p><div class="form-actions"><button type="button" id="cancel-add">取消</button><button type="submit">添加到清单</button></div>
 </form></dialog>
+<dialog id="sync-dialog" aria-labelledby="sync-title">
+<button id="sync-close" type="button" aria-label="关闭账号窗口">关闭</button><h2 id="sync-title">清单同步</h2>
+<div id="sync-login-area"><p>登录同一账号，在手机和电脑继续整理三家店的清单。</p>
+<form id="sync-form"><label>邮箱<input id="sync-email" type="email" autocomplete="email" required maxlength="254"></label><label>密码<input id="sync-password" type="password" autocomplete="current-password" minlength="8" required></label><div class="sync-actions"><button id="sync-login" type="submit">登录</button><button id="sync-signup" type="submit">注册账号</button></div></form></div>
+<div id="sync-member-area" hidden><p id="sync-email-display"></p><p id="sync-detail"></p><div class="sync-actions"><button id="sync-retry" type="button">重试同步</button><button id="sync-import" type="button">导入此设备旧清单</button><button id="sync-signout" type="button">退出登录</button></div>
+<div id="sync-conflict" hidden><p>两台设备都有修改，请选择完整清单版本。本机修改在选择前会保留。</p><div class="sync-actions"><button id="sync-use-cloud" type="button">使用云端版本</button><button id="sync-use-local" type="button">保留此设备版本</button></div></div></div>
+<p id="sync-error" role="alert"></p></dialog>
+<script src="sync.js?v=20260921a"></script>
 <script>
-(() => {
+(async () => {
 'use strict';
+if(window.ShoppingSync)await window.ShoppingSync.ready;
+const storage=window.ShoppingSync?.storage||window.localStorage;
+if(!window.ShoppingSync)document.querySelector('#sync-status').textContent='同步模块未加载，当前修改仅保存在此设备，请刷新重试';
 const storeInfo={
   oliveyoung:{name:'韩国 Olive Young',description:'看图选购，自由整理你的韩国美妆购物清单。商品图片来自品牌与商城，本站非官方商城。',example:'例如：保湿防晒霜'},
   daiso:{name:'韩国 DAISO',description:'收纳、生活用品和美妆小物，把想买的 DAISO 好物记在这里。',example:'例如：旅行收纳袋'},
@@ -687,7 +708,7 @@ const key = storagePrefix+'-sort-20260915-v1';
 const customKey = storagePrefix+'-custom-20260915-v1';
 const purchasedKey = storagePrefix+'-purchased-v1';
 let purchased = new Set();
-try{const saved=JSON.parse(localStorage.getItem(purchasedKey)||'[]');if(Array.isArray(saved))purchased=new Set(saved.filter(id=>typeof id==='string'));}catch(_){/* Keep the list usable when storage is unavailable. */}
+try{const saved=JSON.parse(storage.getItem(purchasedKey)||'[]');if(Array.isArray(saved))purchased=new Set(saved.filter(id=>typeof id==='string'));}catch(_){/* Keep the list usable when storage is unavailable. */}
 let custom = [], destination = null;
 const dialog = document.querySelector('#add-dialog'), form = document.querySelector('#add-form');
 const readButton=document.querySelector('#read-product'), readStatus=document.querySelector('#read-status'), variants=document.querySelector('#read-variants');
@@ -806,7 +827,7 @@ function makeCard(data) {
   return card;
 }
 function restoreCustom(){
-  try {const stored=JSON.parse(localStorage.getItem(customKey)||'[]');if(!Array.isArray(stored))return;
+  try {const stored=JSON.parse(storage.getItem(customKey)||'[]');if(!Array.isArray(stored))return;
     const seen=new Set();for(const data of stored){if(!data||typeof data.id!=='string'||!data.id.startsWith('custom-')||seen.has(data.id)||typeof data.name!=='string')continue;
       if(data.image&&!/^data:image\/(jpeg|png|webp);base64,/.test(data.image))data.image=webURL(data.image);
       const card=makeCard(data);seen.add(data.id);custom.push(data);cards.push(card);bindCard(card,data.id);(document.getElementById(data.list)||lists[1]).append(card);
@@ -828,7 +849,7 @@ form.addEventListener('submit',async e=>{
  const shareText=form.elements.url.value.trim(),shared=parseShare(shareText);
  if(shareText&&!shared.url&&!shared.name&&!shared.price&&!shared.spec)throw Error('未识别到商品链接，请使用完整的 http／https 链接，或清空后直接添加。');
  const data={id:'custom-'+crypto.randomUUID(),list:destination.id,name,spec:form.elements.spec.value.trim(),price:form.elements.price.value.trim(),note:form.elements.note.value.trim(),url:shared.url,image:await readImage(form.elements.imageFile.files[0])||webURL(form.elements.imageUrl.value.trim())};
- const card=makeCard(data);try{localStorage.setItem(customKey,JSON.stringify([...custom,data]));}catch(_){throw Error('浏览器存储空间不足或禁止保存，商品尚未添加。请缩小图片或改用图片网址。');}
+ const card=makeCard(data);try{storage.setItem(customKey,JSON.stringify([...custom,data]));}catch(_){throw Error('浏览器存储空间不足或禁止保存，商品尚未添加。请缩小图片或改用图片网址。');}
  custom.push(data);cards.push(card);bindCard(card,data.id);destination.append(card);update();dialog.close();card.scrollIntoView({block:'nearest'});say('已添加并保存：'+name);
  }catch(error){document.querySelector('#form-error').textContent=error.message||'添加失败，请重试。';}finally{submit.disabled=false;}
 });
@@ -858,8 +879,8 @@ function bindSelection(card){
  box.addEventListener('change',()=>{if(box.checked)selected.add(card.dataset.id);else selected.delete(card.dataset.id);refreshSelection();});
  card.addEventListener('click',e=>{if(!selecting||e.target.closest('.selection-control,.product-note'))return;e.preventDefault();e.stopImmediatePropagation();if(selected.has(card.dataset.id))selected.delete(card.dataset.id);else selected.add(card.dataset.id);refreshSelection();},true);
 }
-function persistDeletion(next){try{localStorage.setItem(deletionKey,JSON.stringify(next));deletionState=next;return true;}catch(_){say('当前浏览器无法保存删除结果，未执行删除。');return false;}}
-function restoreDeletion(){try{const saved=JSON.parse(localStorage.getItem(deletionKey));if(saved&&Array.isArray(saved.deleted)){deletionState=saved;cards.filter(c=>saved.deleted.includes(c.dataset.id)).forEach(c=>c.remove());}}catch(_){}refreshSelection();}
+function persistDeletion(next){try{storage.setItem(deletionKey,JSON.stringify(next));deletionState=next;return true;}catch(_){say('当前浏览器无法保存删除结果，未执行删除。');return false;}}
+function restoreDeletion(){try{const saved=JSON.parse(storage.getItem(deletionKey));if(saved&&Array.isArray(saved.deleted)){deletionState=saved;cards.filter(c=>saved.deleted.includes(c.dataset.id)).forEach(c=>c.remove());}}catch(_){}refreshSelection();}
 manageButton.addEventListener('click',()=>{finish(true);selecting=!selecting;selected.clear();refreshSelection();});
 document.querySelector('#backup-manage').addEventListener('click',()=>manageButton.click());
 document.querySelectorAll('[data-select-list]').forEach(button=>button.addEventListener('click',()=>{items(document.getElementById(button.dataset.selectList)).forEach(c=>selected.add(c.dataset.id));refreshSelection();}));
@@ -889,7 +910,7 @@ function update(save = true) {
   }));
   document.querySelector('#shopping-count').textContent = items(lists[0]).length;
   document.querySelector('#backup-count').textContent = items(lists[1]).length;
-  if (save) try { localStorage.setItem(key, JSON.stringify(lists.map(list => items(list).map(c => c.dataset.id)))); }
+  if (save) try { storage.setItem(key, JSON.stringify(lists.map(list => items(list).map(c => c.dataset.id)))); }
   catch (_) { say('当前浏览器无法保存顺序，关闭后可能恢复初始清单。'); }
 }
 function announce(card) { say(`${title(card)}：已移到${card.parentElement.getAttribute('aria-label')}第 ${items(card.parentElement).indexOf(card) + 1} 位`); }
@@ -907,11 +928,11 @@ function bindNote(card,id){
   const storageKey=storagePrefix+'-note-tags-v3:'+id;let notes=[],editing=-1;
   function readNotes(value){const parsed=JSON.parse(value);if(!Array.isArray(parsed)||!parsed.every(v=>typeof v==='string'))throw Error();return parsed;}
   try{
-    const saved=localStorage.getItem(storageKey);
+    const saved=storage.getItem(storageKey);
     if(saved!==null)notes=readNotes(saved);
     else{
-      const previous=localStorage.getItem(storagePrefix+'-note-tags-v2:'+id);
-      const old=localStorage.getItem(storagePrefix+'-note-v1:'+id)??custom.find(item=>item.id===id)?.note??'';
+      const previous=storage.getItem(storagePrefix+'-note-tags-v2:'+id);
+      const old=storage.getItem(storagePrefix+'-note-v1:'+id)??custom.find(item=>item.id===id)?.note??'';
       const personal=previous!==null?readNotes(previous):old.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
       notes=[...builtins.map(node=>node.textContent.trim()).filter(Boolean),...personal];
     }
@@ -920,7 +941,7 @@ function bindNote(card,id){
   function open(index){editing=index;field.value=index<0?'':notes[index];remove.hidden=index<0;editor.hidden=false;state.textContent='';field.focus();}
   function close(){editor.hidden=true;add.focus({preventScroll:true});}
   function render(){rail.replaceChildren();notes.forEach((text,index)=>{const tag=button(text,'note-tag-edit');tag.setAttribute('aria-label','编辑备注：'+text);tag.addEventListener('click',()=>open(index));rail.append(tag);});rail.append(add);}
-  function persist(next){try{localStorage.setItem(storageKey,JSON.stringify(next));notes=next;render();close();state.textContent='';state.classList.remove('is-error');return true;}catch(_){state.textContent='未保存，请重试';state.classList.add('is-error');return false;}}
+  function persist(next){try{storage.setItem(storageKey,JSON.stringify(next));notes=next;render();close();state.textContent='';state.classList.remove('is-error');return true;}catch(_){state.textContent='未保存，请重试';state.classList.add('is-error');return false;}}
   add.addEventListener('click',()=>open(-1));cancel.addEventListener('click',close);
   editor.addEventListener('submit',e=>{e.preventDefault();const text=field.value.trim();if(!text){field.setCustomValidity('请输入备注内容');field.reportValidity();return;}const next=[...notes];if(editing<0)next.push(text);else next[editing]=text;if(persist(next))rail.scrollLeft=rail.scrollWidth;});
   field.addEventListener('input',()=>field.setCustomValidity(''));field.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();close();}});
@@ -937,7 +958,7 @@ function bindCard(card, id) {
   purchaseButton.addEventListener('click',()=>{
     if(selecting||drag)return;
     const next=new Set(purchased);if(next.has(id))next.delete(id);else next.add(id);
-    try{localStorage.setItem(purchasedKey,JSON.stringify([...next]));}catch(_){say('当前浏览器无法保存选购状态，请稍后重试。');return;}
+    try{storage.setItem(purchasedKey,JSON.stringify([...next]));}catch(_){say('当前浏览器无法保存选购状态，请稍后重试。');return;}
     purchased=next;refreshPurchased();say(title(card)+(purchased.has(id)?'：已标记为已选购':'：已取消选购标记'));
   });
   card.querySelector('.product-actions').append(purchaseButton);refreshPurchased();
@@ -978,7 +999,7 @@ if(storeId==='oliveyoung'){
 }
 restoreCustom();
 try {
-  const saved = JSON.parse(localStorage.getItem(key));
+  const saved = JSON.parse(storage.getItem(key));
   if (Array.isArray(saved) && saved.length === 2 && saved.every(Array.isArray)) {
     const ids = saved.flat();
     if (new Set(ids).size === ids.length && ids.every(id => cards.some(c => c.dataset.id === id)))
@@ -1112,6 +1133,7 @@ window.addEventListener('popstate',followHash);
 if(window.ResizeObserver){const observer=new ResizeObserver(queueNavigation);panels.forEach(panel=>observer.observe(panel));observer.observe(stickyControls);}
 requestAnimationFrame(followHash);
 window.addEventListener('load',followHash,{once:true});
+window.ShoppingSync?.setSafeToReload(()=>!drag&&!selecting&&!document.querySelector('dialog[open]')&&!document.activeElement?.closest('input,textarea,select,[contenteditable=true]')&&!document.querySelector('.note-editor:not([hidden])'));
 
 })();
 
