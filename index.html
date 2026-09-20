@@ -966,13 +966,26 @@ function bindCard(card, id) {
 
 }
 cards.forEach((card,i)=>bindCard(card,String(i)));
+// Keep the original IDs (0–20) stable so saved notes and purchases stay attached.
+const newDefaults=[];
+if(storeId==='oliveyoung'){
+ const data={"url": "https://abib.com/product/%EC%95%BD%EC%82%B0%EC%84%B1-%EC%8B%9C%ED%8A%B8-%EB%A7%88%EC%8A%A4%ED%81%AC-%EC%96%B4%EC%84%B1%EC%B4%88-%ED%95%8F/84/category/1/display/9/", "image": "https://cafe24.poxo.com/ec01/fourco/2gThsm3PjxnX2xgNPAJB00I0U4iIreUG+0gOqwQGa9svvRSV4zdgIN9b3kw9gM5JlY9B6hRCD2CqcLf19xZjlw==/_/web/product/medium/202304/1234591900085074aedaae433050d1bc.jpg", "id": "default-abib-heartleaf-fit", "name": "ABIB 鱼腥草弱酸性面膜", "spec": "鱼腥草舒缓款 · 30 ml / 1 片", "price": "品牌官网参考 ₩2,800 / 片"};
+ const card=makeCard(data);
+ const note=document.createElement('div');note.className='backup-note-inline';
+ note.textContent='品牌官网价核对于 2026-09-21；Olive Young 门店价格与套装以现场为准';
+ card.querySelector('.product-actions').before(note);
+ cards.push(card);bindCard(card,data.id);lists[0].append(card);newDefaults.push(card);
+}
 restoreCustom();
 try {
   const saved = JSON.parse(localStorage.getItem(key));
   if (Array.isArray(saved) && saved.length === 2 && saved.every(Array.isArray)) {
     const ids = saved.flat();
     if (new Set(ids).size === ids.length && ids.every(id => cards.some(c => c.dataset.id === id)))
+      {
       saved.forEach((ids, i) => ids.forEach(id => lists[i].append(cards.find(c => c.dataset.id === id))));
+      newDefaults.filter(card=>!ids.includes(card.dataset.id)).forEach(card=>lists[0].append(card));
+      }
   }
 } catch (_) { /* Storage is optional, including file previews and private browsing. */ }
 restoreDeletion();
