@@ -25,8 +25,8 @@ await eventually(async()=>assert(await b.locator('[data-id="0"] .note-rail').tex
 await a.goto(base+'/?store=daiso');await a.locator('.add-item').first().click();await a.locator('[name=name]').fill('DAISO 同步测试');await a.locator('[name=url]').fill('https://www.daisomall.co.kr/');await a.locator('#add-form [type=submit]').click();
 await eventually(async()=>assert(rows.get('owner').data['korea-shopping-daiso-custom-20260915-v1']?.includes('DAISO 同步测试')));
 await b.goto(base+'/?store=daiso');await b.waitForFunction(()=>document.querySelectorAll('[data-id^="custom-"]').length===1);assert.equal(await b.locator('[data-id^="custom-"] h2').textContent(),'DAISO 同步测试');
-await a.locator('#manage-items').click();await a.locator('.select-item').check();await a.locator('#delete-selected').click();
-await eventually(async()=>assert.equal(await b.locator('article.card').count(),0));
+await a.locator('#manage-items').click();await a.locator('[data-id^="custom-"] .select-item').check();await a.locator('#delete-selected').click();
+await eventually(async()=>assert.equal(await b.locator('[data-id^="custom-"]').count(),0));
 console.log('PASS notes, new products, cross-store data and deletion sync');
 // An incoming update must not reload an unfinished note editor.
 await a.goto(base);await b.goto(base);await b.locator('[data-id="4"] .note-add').click();await b.locator('[data-id="4"] .note-editor input').fill('尚未提交的备注');

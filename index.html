@@ -719,6 +719,8 @@ function platformFor(url){
  if(is('taobao.com')||is('tmall.com')||is('tb.cn'))return '淘宝／天猫';
  if(is('jd.com')||is('jd.hk')||is('3.cn'))return '京东';
  if(is('oliveyoung.co.kr')||is('oliveyoung.com'))return 'Olive Young';
+ if(is('daisomall.co.kr')||is('daiso.co.kr'))return 'DAISO';
+ if(is('nyunyu.kr'))return 'NYUNYU';
  return '其他网站';
 }
 function canonicalLink(value){try{
@@ -823,7 +825,7 @@ function makeCard(data) {
   const wrap=card.querySelector('.imgwrap');
   if (data.image) { const img=document.createElement('img');img.src=data.image;img.alt=data.name;img.loading='lazy';wrap.append(img); }
   else {wrap.classList.add('empty-image');wrap.textContent='暂无商品图片';}
-  if(data.url){const a=document.createElement('a');a.className='btn';a.href=webURL(data.url);a.target='_blank';a.rel='noopener';a.textContent='打开商品页';card.querySelector('.product-actions').prepend(a);}
+  if(data.url){const a=document.createElement('a');a.className='btn';a.href=webURL(data.url);a.target='_blank';a.rel='noopener';a.textContent=data.urlLabel||'打开商品页';a.dataset.compactLabel=data.urlCompactLabel||'商品页 ↗';card.querySelector('.product-actions').prepend(a);}
   return card;
 }
 function restoreCustom(){
@@ -952,7 +954,7 @@ function bindCard(card, id) {
   card.dataset.id = id;
   bindSelection(card);
   const productLink=card.querySelector('.product-actions a.btn');
-  if(productLink){const fullLabel=document.createElement('span');fullLabel.className='action-label-full';fullLabel.textContent=productLink.textContent;const compactLabel=document.createElement('span');compactLabel.className='action-label-compact';compactLabel.textContent='商品页 ↗';productLink.setAttribute('aria-label',productLink.textContent);productLink.replaceChildren(fullLabel,compactLabel);}
+  if(productLink){const fullLabel=document.createElement('span');fullLabel.className='action-label-full';fullLabel.textContent=productLink.textContent;const compactLabel=document.createElement('span');compactLabel.className='action-label-compact';compactLabel.textContent=productLink.dataset.compactLabel||'商品页 ↗';productLink.setAttribute('aria-label',productLink.textContent);productLink.replaceChildren(fullLabel,compactLabel);}
   const purchaseButton=document.createElement('button');purchaseButton.type='button';purchaseButton.className='purchase-toggle';
   function refreshPurchased(){const bought=purchased.has(id);card.classList.toggle('is-purchased',bought);purchaseButton.textContent=bought?'✓ 已选购':'标记已购';purchaseButton.setAttribute('aria-pressed',String(bought));purchaseButton.setAttribute('aria-label',title(card)+(bought?'：已选购，点击取消':'：未选购，点击标记已购'));}
   purchaseButton.addEventListener('click',()=>{
@@ -989,13 +991,34 @@ function bindCard(card, id) {
 cards.forEach((card,i)=>bindCard(card,String(i)));
 // Keep the original IDs (0–20) stable so saved notes and purchases stay attached.
 const newDefaults=[];
-if(storeId==='oliveyoung'){
- const data={"url": "https://abib.com/product/%EC%95%BD%EC%82%B0%EC%84%B1-%EC%8B%9C%ED%8A%B8-%EB%A7%88%EC%8A%A4%ED%81%AC-%EC%96%B4%EC%84%B1%EC%B4%88-%ED%95%8F/84/category/1/display/9/", "image": "https://cafe24.poxo.com/ec01/fourco/2gThsm3PjxnX2xgNPAJB00I0U4iIreUG+0gOqwQGa9svvRSV4zdgIN9b3kw9gM5JlY9B6hRCD2CqcLf19xZjlw==/_/web/product/medium/202304/1234591900085074aedaae433050d1bc.jpg", "id": "default-abib-heartleaf-fit", "name": "ABIB 鱼腥草弱酸性面膜", "spec": "鱼腥草舒缓款 · 30 ml / 1 片", "price": "品牌官网参考 ₩2,800 / 片"};
+function appendDefault(data,listIndex){
  const card=makeCard(data);
- const note=document.createElement('div');note.className='backup-note-inline';
- note.textContent='品牌官网价核对于 2026-09-21；Olive Young 门店价格与套装以现场为准';
- card.querySelector('.product-actions').before(note);
- cards.push(card);bindCard(card,data.id);lists[0].append(card);newDefaults.push(card);
+ if(data.note){const note=document.createElement('div');note.className='backup-note-inline';note.textContent=data.note;card.querySelector('.product-actions').before(note);}
+ card.dataset.defaultList=String(listIndex);
+ cards.push(card);bindCard(card,data.id);lists[listIndex].append(card);newDefaults.push(card);
+}
+if(storeId==='oliveyoung'){
+ appendDefault({id:'default-abib-heartleaf-fit',name:'ABIB 鱼腥草弱酸性面膜',spec:'鱼腥草舒缓款 · 30 ml / 1 片',price:'品牌官网参考 ₩2,800 / 片',url:'https://abib.com/product/%EC%95%BD%EC%82%B0%EC%84%B1-%EC%8B%9C%ED%8A%B8-%EB%A7%88%EC%8A%A4%ED%81%AC-%EC%96%B4%EC%84%B1%EC%B4%88-%ED%95%8F/84/category/1/display/9/',image:'https://cafe24.poxo.com/ec01/fourco/2gThsm3PjxnX2xgNPAJB00I0U4iIreUG+0gOqwQGa9svvRSV4zdgIN9b3kw9gM5JlY9B6hRCD2CqcLf19xZjlw==/_/web/product/medium/202304/1234591900085074aedaae433050d1bc.jpg',note:'品牌官网价核对于 2026-09-21；Olive Young 门店价格与套装以现场为准'},0);
+}
+if(storeId==='daiso'){
+ const source='来源：DAISO 官方商城首页“旅行 BEST”精选；门店库存、色款与价格以现场为准。';
+ [
+  {id:'default-daiso-compression-pouch',name:'DAISO 旅行压缩收纳包（大号）',spec:'灰色 · 旅行收纳系列',price:'₩5,000',image:'https://cdn.daisomall.co.kr/file/PD/20251223/DPqKce5Lp00sONb7AYeo10473511_00_01DPqKce5Lp00sONb7AYeo.jpg'},
+  {id:'default-daiso-standing-washbag',name:'DAISO 旅行立式洗漱包',spec:'旅行洗漱收纳 · 可直立摆放',price:'₩2,000',image:'https://cdn.daisomall.co.kr/file/PD/20251208/qQnKAVYamVl3YBPqlSHj1061595_00_01qQnKAVYamVl3YBPqlSHj.jpg'},
+  {id:'default-daiso-washable-mesh-bag',name:'DAISO 可洗旅行网袋',spec:'灰色 · 旅行小物收纳',price:'₩1,000',image:'https://cdn.daisomall.co.kr/file/PD/20260402/k7DRwdq33MdBmH8HoABE10473611_00_00k7DRwdq33MdBmH8HoABE.jpg'},
+  {id:'default-daiso-mini-bottle-set',name:'DAISO 旅行分装瓶套装',spec:'7 件套 · 旅行分装',price:'价格以官方页面为准',image:'https://cdn.daisomall.co.kr/file/PD/20260828/Kw76ykDucYZW00Wu4Zxw1079447_00_01Kw76ykDucYZW00Wu4Zxw.jpg'}
+ ].forEach(item=>appendDefault({...item,url:'https://www.daisomall.co.kr/',urlLabel:'查看 DAISO 官网',urlCompactLabel:'官网 ↗',note:source},1));
+}
+if(storeId==='nyunyu'){
+ const source='来源：首尔旅行实拍分享（2024 年 4 月调研）。价格为历史参考；款式、库存和门店价格以现场为准。';
+ const share='https://zizitabi.com/entry/nyunyu-seoul';
+ [
+  {id:'default-nyunyu-hoop-earrings',name:'NYUNYU 简约小圈耳环',spec:'银色／金色 · 到店选款',price:'历史参考 ₩3,500',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162452.jpg'},
+  {id:'default-nyunyu-ribbon-earrings',name:'NYUNYU 蝴蝶结耳饰',spec:'潮流款式参考 · 到店选款',price:'历史参考 ₩3,500–5,000',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162306.jpg'},
+  {id:'default-nyunyu-mini-shoulder-bag',name:'NYUNYU 迷你肩包',spec:'小包款式参考 · 到店选款',price:'历史参考 ₩20,000 起',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162352.jpg'},
+  {id:'default-nyunyu-baseball-cap',name:'NYUNYU 棒球帽',spec:'帽型与颜色到店选款',price:'历史参考 ₩6,500 起',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162412.jpg'},
+  {id:'default-nyunyu-hair-clips',name:'NYUNYU 发夹',spec:'发饰款式参考 · 到店选款',price:'价格以现场为准',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162758.jpg'}
+ ].forEach(item=>appendDefault({...item,url:share,urlLabel:'查看实拍分享',urlCompactLabel:'实拍 ↗',note:source},1));
 }
 restoreCustom();
 try {
@@ -1005,7 +1028,7 @@ try {
     if (new Set(ids).size === ids.length && ids.every(id => cards.some(c => c.dataset.id === id)))
       {
       saved.forEach((ids, i) => ids.forEach(id => lists[i].append(cards.find(c => c.dataset.id === id))));
-      newDefaults.filter(card=>!ids.includes(card.dataset.id)).forEach(card=>lists[0].append(card));
+      newDefaults.filter(card=>!ids.includes(card.dataset.id)).forEach(card=>lists[Number(card.dataset.defaultList)].append(card));
       }
   }
 } catch (_) { /* Storage is optional, including file previews and private browsing. */ }
