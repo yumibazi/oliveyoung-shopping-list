@@ -11,7 +11,9 @@ const path = require('node:path');
 
     await page.goto(source + '?store=daiso');
     assert.equal(await page.locator('#backup-list .card').count(), 4, 'DAISO has four official travel picks');
-    assert.equal(await page.locator('#shopping-list .card').count(), 0);
+    assert.equal(await page.locator('#shopping-list .card').count(), 7, 'DAISO has seven official travel picks in the shopping list');
+    assert.match(await page.locator('#shopping-list').textContent(), /₩3,000 ≈ ¥16/);
+    assert.match(await page.locator('#shopping-list').textContent(), /₩1,000 ≈ ¥5/);
     assert.match(await page.locator('#backup-list').textContent(), /旅行压缩收纳包/);
     assert.match(await page.locator('#backup-list').textContent(), /立式洗漱包/);
     assert.equal(await page.locator('#backup-list .card a.btn').count(), 4);

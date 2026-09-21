@@ -1001,13 +1001,22 @@ if(storeId==='oliveyoung'){
  appendDefault({id:'default-abib-heartleaf-fit',name:'ABIB 鱼腥草弱酸性面膜',spec:'鱼腥草舒缓款 · 30 ml / 1 片',price:'品牌官网参考 ₩2,800 / 片',url:'https://abib.com/product/%EC%95%BD%EC%82%B0%EC%84%B1-%EC%8B%9C%ED%8A%B8-%EB%A7%88%EC%8A%A4%ED%81%AC-%EC%96%B4%EC%84%B1%EC%B4%88-%ED%95%8F/84/category/1/display/9/',image:'https://cafe24.poxo.com/ec01/fourco/2gThsm3PjxnX2xgNPAJB00I0U4iIreUG+0gOqwQGa9svvRSV4zdgIN9b3kw9gM5JlY9B6hRCD2CqcLf19xZjlw==/_/web/product/medium/202304/1234591900085074aedaae433050d1bc.jpg',note:'品牌官网价核对于 2026-09-21；Olive Young 门店价格与套装以现场为准'},0);
 }
 if(storeId==='daiso'){
- const source='来源：DAISO 官方商城首页“旅行 BEST”精选；门店库存、色款与价格以现场为准。';
+ const source='来源：DAISO 官方商城首页“旅行 BEST”精选；人民币按 ₩1≈¥0.0052 估算，门店库存、色款与价格以现场为准。';
  [
-  {id:'default-daiso-compression-pouch',name:'DAISO 旅行压缩收纳包（大号）',spec:'灰色 · 旅行收纳系列',price:'₩5,000',image:'https://cdn.daisomall.co.kr/file/PD/20251223/DPqKce5Lp00sONb7AYeo10473511_00_01DPqKce5Lp00sONb7AYeo.jpg'},
-  {id:'default-daiso-standing-washbag',name:'DAISO 旅行立式洗漱包',spec:'旅行洗漱收纳 · 可直立摆放',price:'₩2,000',image:'https://cdn.daisomall.co.kr/file/PD/20251208/qQnKAVYamVl3YBPqlSHj1061595_00_01qQnKAVYamVl3YBPqlSHj.jpg'},
-  {id:'default-daiso-washable-mesh-bag',name:'DAISO 可洗旅行网袋',spec:'灰色 · 旅行小物收纳',price:'₩1,000',image:'https://cdn.daisomall.co.kr/file/PD/20260402/k7DRwdq33MdBmH8HoABE10473611_00_00k7DRwdq33MdBmH8HoABE.jpg'},
-  {id:'default-daiso-mini-bottle-set',name:'DAISO 旅行分装瓶套装',spec:'7 件套 · 旅行分装',price:'价格以官方页面为准',image:'https://cdn.daisomall.co.kr/file/PD/20260828/Kw76ykDucYZW00Wu4Zxw1079447_00_01Kw76ykDucYZW00Wu4Zxw.jpg'}
+  {id:'default-daiso-compression-pouch',name:'DAISO 旅行压缩收纳包（大号）',spec:'灰色 · 旅行收纳系列',price:'₩5,000 ≈ ¥26',image:'https://cdn.daisomall.co.kr/file/PD/20251223/DPqKce5Lp00sONb7AYeo10473511_00_01DPqKce5Lp00sONb7AYeo.jpg'},
+  {id:'default-daiso-standing-washbag',name:'DAISO 旅行立式洗漱包',spec:'旅行洗漱收纳 · 可直立摆放',price:'₩2,000 ≈ ¥10',image:'https://cdn.daisomall.co.kr/file/PD/20251208/qQnKAVYamVl3YBPqlSHj1061595_00_01qQnKAVYamVl3YBPqlSHj.jpg'},
+  {id:'default-daiso-washable-mesh-bag',name:'DAISO 可洗旅行网袋',spec:'灰色 · 旅行小物收纳',price:'₩1,000 ≈ ¥5',image:'https://cdn.daisomall.co.kr/file/PD/20260402/k7DRwdq33MdBmH8HoABE10473611_00_00k7DRwdq33MdBmH8HoABE.jpg'},
+  {id:'default-daiso-mini-bottle-set',name:'DAISO 旅行分装瓶套装',spec:'7 件套 · 旅行分装',price:'₩2,000 ≈ ¥10',image:'https://cdn.daisomall.co.kr/file/PD/20260828/Kw76ykDucYZW00Wu4Zxw1079447_00_01Kw76ykDucYZW00Wu4Zxw.jpg'}
  ].forEach(item=>appendDefault({...item,url:'https://www.daisomall.co.kr/',urlLabel:'查看 DAISO 官网',urlCompactLabel:'官网 ↗',note:source},1));
+ [
+  {id:'default-daiso-fold-shoulder-bag',name:'DAISO 旅行折叠肩包（黑色）',spec:'轻便折叠 · 旅行随身包',price:'₩3,000 ≈ ¥16',image:'https://cdn.daisomall.co.kr/file/PD/20251208/gFUYd29ZOHEwgpAkxc7o10413371_00_00gFUYd29ZOHEwgpAkxc7o.jpg'},
+  {id:'default-daiso-mini-container-2pc',name:'DAISO 蜡笔小新旅行分装瓶（2 个）',spec:'约 30 ml／50 ml · 旅行分装',price:'₩1,000 ≈ ¥5',image:'https://cdn.daisomall.co.kr/file/PD/20260804/TFefYNbxuhA7vPPORIF51079444_00_00TFefYNbxuhA7vPPORIF5.jpg'},
+  {id:'default-daiso-container-7pc',name:'DAISO 蜡笔小新旅行分装套装（7 件）',spec:'多规格分装 · 旅行收纳',price:'₩2,000 ≈ ¥10',image:'https://cdn.daisomall.co.kr/file/PD/20260828/feWeKzIWGxis1GryrWy01079447_00_00feWeKzIWGxis1GryrWy0.jpg'},
+  {id:'default-daiso-retractable-keyholder',name:'DAISO 伸缩钥匙扣（挂钩款）',spec:'黑色 · 行李／钥匙防丢',price:'₩1,000 ≈ ¥5',image:'https://cdn.daisomall.co.kr/file/PD/20241226/GROjYLh4ZKh8wqASzhNz10195511_00_02GROjYLh4ZKh8wqASzhNz.jpg'},
+  {id:'default-daiso-shower-set-8step',name:'DAISO 旅行洗浴 8 件套',spec:'一次性旅行洗浴用品',price:'₩2,000 ≈ ¥10',image:'https://cdn.daisomall.co.kr/file/PD/20231213/iA3On4woXHdnU7VLR6PU1035072_00_00iA3On4woXHdnU7VLR6PU.jpg'},
+  {id:'default-daiso-shower-kit-4step',name:'DAISO 4 步旅行洗浴套装',spec:'5 ml × 4 · 便携洗浴',price:'₩1,000 ≈ ¥5',image:'https://cdn.daisomall.co.kr/file/PD/20250711/Xxedd7XKKeW2iAgaB9wj1035073_00_00Xxedd7XKKeW2iAgaB9wj.jpg'},
+  {id:'default-daiso-waist-bag',name:'DAISO 旅行腰包／斜挎小包',spec:'象牙色 · 旅行随身收纳',price:'₩3,000 ≈ ¥16',image:'https://cdn.daisomall.co.kr/file/PD/20251016/0ARlFAhjLvljFFzetn9B10473491_00_000ARlFAhjLvljFFzetn9B.jpg'}
+ ].forEach(item=>appendDefault({...item,url:'https://www.daisomall.co.kr/',urlLabel:'查看 DAISO 官网',urlCompactLabel:'官网 ↗',note:source},0));
 }
 if(storeId==='nyunyu'){
  const source='来源：首尔旅行实拍分享（2024 年 4 月调研）。价格为历史参考；款式、库存和门店价格以现场为准。';
