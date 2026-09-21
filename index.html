@@ -1015,8 +1015,12 @@ if(storeId==='daiso'){
   {id:'default-daiso-retractable-keyholder',name:'DAISO 伸缩钥匙扣（挂钩款）',spec:'黑色 · 行李／钥匙防丢',price:'₩1,000 ≈ ¥5',image:'https://cdn.daisomall.co.kr/file/PD/20241226/GROjYLh4ZKh8wqASzhNz10195511_00_02GROjYLh4ZKh8wqASzhNz.jpg'},
   {id:'default-daiso-shower-set-8step',name:'DAISO 旅行洗浴 8 件套',spec:'一次性旅行洗浴用品',price:'₩2,000 ≈ ¥10',image:'https://cdn.daisomall.co.kr/file/PD/20231213/iA3On4woXHdnU7VLR6PU1035072_00_00iA3On4woXHdnU7VLR6PU.jpg'},
   {id:'default-daiso-shower-kit-4step',name:'DAISO 4 步旅行洗浴套装',spec:'5 ml × 4 · 便携洗浴',price:'₩1,000 ≈ ¥5',image:'https://cdn.daisomall.co.kr/file/PD/20250711/Xxedd7XKKeW2iAgaB9wj1035073_00_00Xxedd7XKKeW2iAgaB9wj.jpg'},
-  {id:'default-daiso-waist-bag',name:'DAISO 旅行腰包／斜挎小包',spec:'象牙色 · 旅行随身收纳',price:'₩3,000 ≈ ¥16',image:'https://cdn.daisomall.co.kr/file/PD/20251016/0ARlFAhjLvljFFzetn9B10473491_00_000ARlFAhjLvljFFzetn9B.jpg'}
- ].forEach(item=>appendDefault({...item,url:'https://www.daisomall.co.kr/',urlLabel:'查看 DAISO 官网',urlCompactLabel:'官网 ↗',note:source},0));
+  {id:'default-daiso-waist-bag',name:'DAISO 旅行腰包／斜挎小包',spec:'象牙色 · 旅行随身收纳',price:'₩3,000 ≈ ¥16',image:'https://cdn.daisomall.co.kr/file/PD/20251016/0ARlFAhjLvljFFzetn9B10473491_00_000ARlFAhjLvljFFzetn9B.jpg'},
+  {id:'default-daiso-mesh-case-xl',name:'DAISO 折叠旅行收纳袋（XL）',spec:'加大号 · 衣物与行李收纳',price:'₩3,000 ≈ ¥16',image:'https://cdn.daisomall.co.kr/file/PD/20251223/FrWyWux3nQFOrYt2a3nW1061589_00_00FrWyWux3nQFOrYt2a3nW.jpg'},
+  {id:'default-daiso-mesh-case-l',name:'DAISO 折叠旅行收纳袋（L）',spec:'大号 · 衣物与小物收纳',price:'₩2,000 ≈ ¥10',image:'https://cdn.daisomall.co.kr/file/PD/20251223/Jypi8QNn9tCgkm5qxyiw1061590_00_00Jypi8QNn9tCgkm5qxyiw.jpg'},
+  {id:'default-daiso-rfid-waist-bag',name:'DAISO RFID 防盗腰包',spec:'米色 · 护照与卡片随身收纳',price:'₩3,000 ≈ ¥16',image:'https://cdn.daisomall.co.kr/file/PD/20260417/l7AcafLFeRroH3D8DrKo1061594_00_00l7AcafLFeRroH3D8DrKo.jpg'},
+  {id:'default-daiso-mesh-compression-pouch',name:'DAISO 网面压缩收纳包',spec:'约 23 × 18 × 8 cm · 小号',price:'₩2,000 ≈ ¥10',image:'https://cdn.daisomall.co.kr/file/PD/20251230/RAemt7dvvvD02wgOQO6d1064342_00_00RAemt7dvvvD02wgOQO6d.jpg'}
+ ].forEach(item=>appendDefault({...item,url:'https://www.daisomall.co.kr/',urlLabel:'查看 DAISO 官网',urlCompactLabel:'官网 ↗',note:source},1));
 }
 if(storeId==='nyunyu'){
  const source='来源：首尔旅行实拍分享（2024 年 4 月调研）。价格为历史参考；款式、库存和门店价格以现场为准。';
@@ -1026,8 +1030,28 @@ if(storeId==='nyunyu'){
   {id:'default-nyunyu-ribbon-earrings',name:'NYUNYU 蝴蝶结耳饰',spec:'潮流款式参考 · 到店选款',price:'历史参考 ₩3,500–5,000',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162306.jpg'},
   {id:'default-nyunyu-mini-shoulder-bag',name:'NYUNYU 迷你肩包',spec:'小包款式参考 · 到店选款',price:'历史参考 ₩20,000 起',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162352.jpg'},
   {id:'default-nyunyu-baseball-cap',name:'NYUNYU 棒球帽',spec:'帽型与颜色到店选款',price:'历史参考 ₩6,500 起',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162412.jpg'},
-  {id:'default-nyunyu-hair-clips',name:'NYUNYU 发夹',spec:'发饰款式参考 · 到店选款',price:'价格以现场为准',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162758.jpg'}
+  {id:'default-nyunyu-hair-clips',name:'NYUNYU 发夹',spec:'发饰款式参考 · 到店选款',price:'价格以现场为准',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162758.jpg'},
+  {id:'default-nyunyu-necklace',name:'NYUNYU 项链',spec:'叠戴款式参考 · 到店选款',price:'价格以现场为准',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162716.jpg'},
+  {id:'default-nyunyu-scrunchie',name:'NYUNYU 发圈',spec:'彩色发饰参考 · 到店选款',price:'价格以现场为准',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162737.jpg'},
+  {id:'default-nyunyu-headband',name:'NYUNYU 发带',spec:'日常穿搭发饰 · 到店选款',price:'价格以现场为准',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162635.jpg'},
+  {id:'default-nyunyu-keychain',name:'NYUNYU 钥匙扣',spec:'包包挂饰参考 · 到店选款',price:'价格以现场为准',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162606.jpg'},
+  {id:'default-nyunyu-hairband-variant',name:'NYUNYU 另一款发带',spec:'发饰款式参考 · 到店选款',price:'价格以现场为准',image:'https://cdn-ak.f.st-hatena.com/images/fotolife/z/zizichan1103/20240505/20240505162647.jpg'}
  ].forEach(item=>appendDefault({...item,url:share,urlLabel:'查看实拍分享',urlCompactLabel:'实拍 ↗',note:source},1));
+}
+// The previous release placed the original DAISO picks in the shopping list. Move them once
+// so this release starts with every default DAISO recommendation in the backup section.
+if(storeId==='daiso'&&storage.getItem(storagePrefix+'-daiso-defaults-to-backup-v1')!=='done'){
+ try{
+  const saved=JSON.parse(storage.getItem(key)||'null');
+  if(Array.isArray(saved)&&saved.length===2&&saved.every(Array.isArray)){
+   const defaultIds=new Set(newDefaults.map(card=>card.dataset.id));
+   const moved=saved[0].filter(id=>defaultIds.has(id));
+   saved[0]=saved[0].filter(id=>!defaultIds.has(id));
+   saved[1]=[...saved[1],...moved];
+   storage.setItem(key,JSON.stringify(saved));
+  }
+  storage.setItem(storagePrefix+'-daiso-defaults-to-backup-v1','done');
+ }catch(_){/* Keep the page usable if storage is unavailable. */}
 }
 restoreCustom();
 try {

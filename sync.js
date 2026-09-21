@@ -4,7 +4,7 @@
 const URL_BASE='https://jycsvwtynqkyhourttdu.supabase.co';
 const API_KEY='sb_publishable_xGuIUtxUEM6nhgRisGqbog_USaaH_9a';
 const AUTH_KEY='korea-shopping-auth-v1', CACHE_PREFIX='korea-shopping-cloud-v1:';
-const allowed=k=>/^(oliveyoung|korea-shopping-(daiso|nyunyu))-(sort-20260915-v1|custom-20260915-v1|purchased-v1|deletions-v1|note-tags-v[23]:.+|note-v1:.+)$/.test(k);
+const allowed=k=>/^(oliveyoung|korea-shopping-(daiso|nyunyu))-(sort-20260915-v1|custom-20260915-v1|purchased-v1|deletions-v1|daiso-defaults-to-backup-v1|note-tags-v[23]:.+|note-v1:.+)$/.test(k);
 const native=window.localStorage;
 if(new URLSearchParams(location.hash.slice(1)).has('access_token'))history.replaceState(null,'',location.pathname+location.search);
 const readJSON=(k,fallback)=>{try{return JSON.parse(native.getItem(k))??fallback;}catch{return fallback;}};
